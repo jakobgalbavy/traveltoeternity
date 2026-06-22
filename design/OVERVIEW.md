@@ -1,4 +1,4 @@
-# Travel to Eternity — Game Overview
+# Deep Transit — Game Overview
 
 ## Concept
 A mission-management game where players outfit and oversee deep-space colonization ships leaving Earth for distant planets. The further a destination, the greater the reward — and the greater the danger.

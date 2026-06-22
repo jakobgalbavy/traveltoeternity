@@ -23,6 +23,9 @@ This file tracks design decisions: **open** (needs a choice), **decided** (locke
 | D-013 | Ship customization | Modular with a deep upgrade tree | Years to fully upgrade; starts small. Every module is an upgrade timer = monetization hook. |
 | D-014 | Crew model | Individual contractors | Hired/fired freely. Price scales with specialization and experience. May have demands. Long-haul missions need expensive specialists. |
 | D-015 | Destination map | Fixed star map, unlocked progressively | New destination clusters added via content updates. Seasonal events tied to specific locations. |
+| D-016 | Game name | Deep Transit | Confirmed by user |
+| D-017 | Cargo system | Two separate progression trees: Passengers and Packages | Each tree has its own upgrades, specialist contractors, events, and risk profile. Ships can specialize or mix. |
+| D-018 | Ship naming | Player-customizable ship names | Named on commissioning; name appears in all mission logs, event reports, and comms |
 
 ---
 
@@ -31,7 +34,7 @@ This file tracks design decisions: **open** (needs a choice), **decided** (locke
 | # | Decision | Options | Notes |
 |---|----------|---------|-------|
 | O-001 | Player perspective | (a) God-view mission planner, (b) First-person onboard character, (c) Hybrid: base-management + onboard events | Affects entire UX |
-| O-011 | Organization name | Needs a fictional NASA-equivalent name (can't use NASA) | Shapes UI branding, lore, and player identity |
+| O-012 | Agency name | Now that the game is "Deep Transit," agency could be "Deep Transit Authority," "Deep Transit Command," or something unrelated | Shapes all UI chrome and lore voice |
 
 ---
 

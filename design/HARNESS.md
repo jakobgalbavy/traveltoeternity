@@ -1,4 +1,4 @@
-# Travel to Eternity — Design Harness
+# Deep Transit — Design Harness
 
 This is the master index for all design documentation. Every significant decision, system, and open question is tracked here or in a linked file.
 
@@ -13,6 +13,7 @@ This is the master index for all design documentation. Every significant decisio
 | `systems/CORE_LOOP.md` | Macro loop (mission arc) + micro loop (day-to-day) |
 | `systems/VOYAGE_EVENTS.md` | Full event taxonomy, chaining, resolution mechanics |
 | `systems/CREW_AND_SETTLERS.md` | Crew roles, morale system, individual settler traits, distance/specialization curve |
+| `systems/CARGO.md` | Two cargo trees (Passengers + Packages), mixed manifests, ship naming |
 | `systems/ECONOMY.md` | Payout formula, progression, upgrades, risk levers |
 | `systems/MONETIZATION.md` | Revenue streams, IAP tiers, ad strategy, season pass, hooks, red lines |
 | `systems/MOBILE_LOOP.md` | Session design, background timers, push notifications, voyage duration, UI principles |
@@ -35,7 +36,9 @@ This is the master index for all design documentation. Every significant decisio
 | Event system | DRAFT | Define event queue / pending-decision card UX |
 | Crew system | DRAFT | Decide O-005 (individuals vs pool) |
 | Economy | DRAFT | Validate payout formula with numbers |
-| Agency identity | OPEN | Decide O-011 (agency name + branding) |
+| Game name | DECIDED (Deep Transit) | — |
+| Cargo system | DRAFT | Validate mixed manifest complexity vs. player cognitive load |
+| Agency identity | OPEN | Decide O-012 (agency name — may derive from "Deep Transit") |
 | UI / UX | NOT STARTED | Mission-control room aesthetic |
 | Art direction | NOT STARTED | — |
 
@@ -50,8 +53,8 @@ This is the master index for all design documentation. Every significant decisio
 
 ---
 
-## Key Open Questions (needs answers before building)
+## Key Open Questions
 
-1. **O-011** — Agency/game name (fictional NASA-equivalent — appears on every screen)?
+1. **O-012** — Agency name. Game is *Deep Transit* — could the agency simply be the **Deep Transit Authority** (DTA), or should it be something independent?
 
-Everything else is decided. Name this and we can start building.
+Everything else is decided. Resolve this and we're ready to open Unity.
