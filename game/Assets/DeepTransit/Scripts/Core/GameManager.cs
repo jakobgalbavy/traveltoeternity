@@ -1,4 +1,5 @@
 using UnityEngine;
+using DeepTransit.Missions;
 
 namespace DeepTransit.Core
 {
