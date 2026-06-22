@@ -40,13 +40,21 @@ namespace DeepTransit.Editor
                 $"{ResRoot}/Modules", $"{ResRoot}/Blueprints",
             };
             foreach (var d in dirs)
+                EnsureFolder(d);
+        }
+
+        // Creates every folder in the path, starting from Assets/, if it doesn't exist.
+        static void EnsureFolder(string path)
+        {
+            if (AssetDatabase.IsValidFolder(path)) return;
+            var parts = path.Split('/');
+            string current = parts[0];
+            for (int i = 1; i < parts.Length; i++)
             {
-                if (!AssetDatabase.IsValidFolder(d))
-                {
-                    var parts = d.Split('/');
-                    string parent = string.Join("/", parts[..^1]);
-                    AssetDatabase.CreateFolder(parent, parts[^1]);
-                }
+                string next = current + "/" + parts[i];
+                if (!AssetDatabase.IsValidFolder(next))
+                    AssetDatabase.CreateFolder(current, parts[i]);
+                current = next;
             }
         }
 
