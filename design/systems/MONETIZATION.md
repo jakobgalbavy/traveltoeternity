@@ -6,6 +6,30 @@ Monetization is a first-class design concern, not an afterthought. Every core sy
 
 ---
 
+## F2P vs. Premium Tier (phased rollout)
+
+### Phase 1 — F2P Launch
+- Single ship slot
+- Full core loop accessible
+- Rewarded ads + IAP hard currency
+- Priority Mission events: limited-time 2nd ship slot (see below)
+
+### Phase 2 — Premium Layer (post-launch)
+- Fleet Commander upgrade: permanent 2nd (and 3rd) ship slot
+- Exclusive ship classes and crew specialists
+- Season pass with monthly content
+- Possibly: ad-free mode as standalone IAP
+
+### Priority Mission Event (F2P Fleet Taste)
+- Fires every 2–4 weeks (limited time, 48h window)
+- Player is given a pre-crewed 2nd ship for a special high-value mission
+- Cannot customize the 2nd ship — it's dispatched as-is (taste, not full experience)
+- Completing the Priority Mission gives a premium currency bonus
+- UI prominently shows "Upgrade to Fleet Commander to always have 2 ships"
+- Design goal: create desire for fleet management without giving it away
+
+---
+
 ## Revenue Streams
 
 ### 1. Hard Currency (Stars / Stardust — name TBD)

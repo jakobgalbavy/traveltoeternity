@@ -4,7 +4,7 @@
 A mission-management game where players outfit and oversee deep-space colonization ships leaving Earth for distant planets. The further a destination, the greater the reward — and the greater the danger.
 
 ## Core Fantasy
-You are a mission commander. Every departure is a gamble. Survive the journey, manage your crew, keep the ship alive, and land on a world no human has touched. The further you push, the richer — and the more legendary — you become.
+You are mission control. Every departure is a gamble you authorize from the ground. You watch, direct, and intervene — but you are never aboard. Your crew trusts your judgment across the void. The further you send them, the richer — and the more legendary — your agency becomes.
 
 ## Pillars
 1. **Risk vs. Reward** — closer destinations are safer and cheaper; farther destinations multiply earnings but also multiply danger and duration.
@@ -18,5 +18,8 @@ You are a mission commander. Every departure is a gamble. Survive the journey, m
 - **Lose:** Colony ship lost (hull failure, crew extinction, total mutiny, starvation).
 - **Degrees:** Partial success — land with reduced crew / damaged cargo — yields reduced payout and reputation.
 
+## Player Identity
+The player runs a fictional deep-space colonization agency — the institutional equivalent of NASA, but private or future-governmental. Name TBD (see DECISIONS.md O-011). The UI should feel like a mission control room: telemetry, status panels, alert queues, comms logs. Cold, procedural on the surface — but the human drama underneath is anything but.
+
 ## Tone
-Grounded sci-fi. No FTL hand-waving. Years-long journeys. Real stakes.
+Grounded sci-fi. No FTL hand-waving. Years-long journeys in real lore, compressed into days/weeks of real time for mobile. Real stakes.

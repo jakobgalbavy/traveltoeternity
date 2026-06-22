@@ -24,15 +24,19 @@ This is the master index for all design documentation. Every significant decisio
 | Area | Status | Next step |
 |------|--------|-----------|
 | Concept | DONE | — |
-| Platform | DECIDED (iOS + Android) | Decide O-008 (Unity vs Godot) |
-| Time model | DECIDED (realtime + background timers) | Decide O-010 (voyage duration calibration) |
-| Monetization strategy | DRAFT | Decide O-009 (F2P model) + validate hooks |
-| Mobile loop | DRAFT | Refine session length targets |
-| Core loop | DRAFT | Update for mobile session structure |
-| Event system | DRAFT | Define event queue / pending-decision UX |
+| Platform | DECIDED (iOS + Android, Unity) | — |
+| Player perspective | DECIDED (god-view mission control) | — |
+| Time model | DECIDED (realtime background timers, hours-based) | — |
+| Fleet model | DECIDED (F2P = 1 ship; premium = fleet; Priority Mission = F2P taste) | — |
+| Monetization model | DECIDED (F2P now, premium layer later) | Validate hook calibration |
+| Monetization strategy | DRAFT | Priority Mission event cadence to tune |
+| Mobile loop | DRAFT | Session length targets + notification copy |
+| Core loop | DRAFT | Update for god-view UX |
+| Event system | DRAFT | Define event queue / pending-decision card UX |
 | Crew system | DRAFT | Decide O-005 (individuals vs pool) |
 | Economy | DRAFT | Validate payout formula with numbers |
-| UI / UX | NOT STARTED | Decide O-001 (player perspective) first |
+| Agency identity | OPEN | Decide O-011 (agency name + branding) |
+| UI / UX | NOT STARTED | Mission-control room aesthetic |
 | Art direction | NOT STARTED | — |
 
 ---
@@ -48,10 +52,9 @@ This is the master index for all design documentation. Every significant decisio
 
 ## Key Open Questions (needs answers before building)
 
-1. **O-001** — Player perspective (god-view commander / first-person / hybrid)?
-2. **O-008** — Engine: Unity vs. Godot? (Both export to iOS + Android)
-3. **O-009** — Monetization model: pure F2P, premium + IAP, or subscription-first?
-4. **O-010** — Voyage duration: hours-based or days-based for base tier?
-5. **O-002** — Fleet management (multiple ships) or single-ship focus?
+1. **O-004** — Ship customization: pre-built classes or modular build-your-own?
+2. **O-005** — Crew representation: named individuals or abstract pool?
+3. **O-006** — Destinations: procedural or fixed map?
+4. **O-011** — Agency name (fictional NASA-equivalent — shapes all UI branding)?
 
-These shape architecture, UX, and monetization depth downstream.
+Engine, platform, perspective, monetization model, fleet model, and voyage timing are all decided. These four remaining questions can be resolved in any order.
