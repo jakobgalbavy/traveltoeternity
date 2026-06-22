@@ -20,9 +20,10 @@ namespace DeepTransit.Missions
         public void LaunchMission(Mission mission)
         {
             ActiveMissions.Add(mission);
-            mission.Launch(TimeManager.Instance != null
+            var startMinute = GameManager.Instance != null
                 ? GameManager.Instance.TimeManager.ElapsedGameMinutes
-                : 0);
+                : 0;
+            mission.Launch(startMinute);
         }
     }
 }
