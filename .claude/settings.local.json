@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(\"/Applications/Unity Hub.app/Contents/MacOS/Unity Hub\" -- --headless help)",
+      "Bash(/Applications/Unity Hub.app/Contents/MacOS/Unity Hub *)",
+      "Bash(\"/Applications/Unity Hub.app/Contents/MacOS/Unity Hub\" -- --headless install-modules --version 6000.0.34f1 -m ios android android-sdk-ndk-tools android-open-jdk)",
+      "Bash(echo \"Module install launched \\(PID $!\\)\")",
+      "Bash(/Applications/Unity/Hub/Editor/6000.0.34f1/Unity.app/Contents/MacOS/Unity -batchmode -nographics -quit -createProject /Users/jakob/Claude/traveltoeternity/game -logFile /tmp/unity_create.log)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(\"/Applications/Unity Hub.app/Contents/MacOS/Unity Hub\" -- --headless install-modules --version 6000.4.9f1 -m ios android android-sdk-ndk-tools android-open-jdk)",
+      "Bash(echo \"PID $!\")",
+      "Bash(/Applications/Unity/Hub/Editor/6000.4.9f1/Unity.app/Contents/MacOS/Unity -batchmode -nographics -quit -createProject /Users/jakob/Claude/traveltoeternity/game -logFile /tmp/unity_create.log)"
+    ]
+  }
+}
