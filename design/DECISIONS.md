@@ -34,7 +34,7 @@ This file tracks design decisions: **open** (needs a choice), **decided** (locke
 | # | Decision | Options | Notes |
 |---|----------|---------|-------|
 | O-001 | Player perspective | (a) God-view mission planner, (b) First-person onboard character, (c) Hybrid: base-management + onboard events | Affects entire UX |
-| O-012 | Agency name | Now that the game is "Deep Transit," agency could be "Deep Transit Authority," "Deep Transit Command," or something unrelated | Shapes all UI chrome and lore voice |
+| D-019 | Agency name | Deep Transit Authority (DTA) | Player runs the DTA. Appears in all UI chrome, comms, lore. |
 
 ---
 

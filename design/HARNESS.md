@@ -37,8 +37,8 @@ This is the master index for all design documentation. Every significant decisio
 | Crew system | DRAFT | Decide O-005 (individuals vs pool) |
 | Economy | DRAFT | Validate payout formula with numbers |
 | Game name | DECIDED (Deep Transit) | — |
+| Agency identity | DECIDED (Deep Transit Authority / DTA) | — |
 | Cargo system | DRAFT | Validate mixed manifest complexity vs. player cognitive load |
-| Agency identity | OPEN | Decide O-012 (agency name — may derive from "Deep Transit") |
 | UI / UX | NOT STARTED | Mission-control room aesthetic |
 | Art direction | NOT STARTED | — |
 
@@ -55,6 +55,4 @@ This is the master index for all design documentation. Every significant decisio
 
 ## Key Open Questions
 
-1. **O-012** — Agency name. Game is *Deep Transit* — could the agency simply be the **Deep Transit Authority** (DTA), or should it be something independent?
-
-Everything else is decided. Resolve this and we're ready to open Unity.
+None. All design decisions are locked. Ready to build.
