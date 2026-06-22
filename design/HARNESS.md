@@ -52,9 +52,6 @@ This is the master index for all design documentation. Every significant decisio
 
 ## Key Open Questions (needs answers before building)
 
-1. **O-004** — Ship customization: pre-built classes or modular build-your-own?
-2. **O-005** — Crew representation: named individuals or abstract pool?
-3. **O-006** — Destinations: procedural or fixed map?
-4. **O-011** — Agency name (fictional NASA-equivalent — shapes all UI branding)?
+1. **O-011** — Agency/game name (fictional NASA-equivalent — appears on every screen)?
 
-Engine, platform, perspective, monetization model, fleet model, and voyage timing are all decided. These four remaining questions can be resolved in any order.
+Everything else is decided. Name this and we can start building.

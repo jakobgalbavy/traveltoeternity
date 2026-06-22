@@ -20,6 +20,9 @@ This file tracks design decisions: **open** (needs a choice), **decided** (locke
 | D-010 | Monetization model | F2P base; premium features unlocked via IAP/subscription later | Start lean; premium layer added as game grows |
 | D-011 | Voyage timer base | Short-range = hours; mid = ~1 day; long = days; extreme = weeks | See MOBILE_LOOP.md for calibration |
 | D-012 | Fleet management | Single ship for F2P; multiple ships = premium | F2P gets a 2nd ship slot during special "Priority Mission" events only — a taste of premium |
+| D-013 | Ship customization | Modular with a deep upgrade tree | Years to fully upgrade; starts small. Every module is an upgrade timer = monetization hook. |
+| D-014 | Crew model | Individual contractors | Hired/fired freely. Price scales with specialization and experience. May have demands. Long-haul missions need expensive specialists. |
+| D-015 | Destination map | Fixed star map, unlocked progressively | New destination clusters added via content updates. Seasonal events tied to specific locations. |
 
 ---
 
@@ -28,9 +31,6 @@ This file tracks design decisions: **open** (needs a choice), **decided** (locke
 | # | Decision | Options | Notes |
 |---|----------|---------|-------|
 | O-001 | Player perspective | (a) God-view mission planner, (b) First-person onboard character, (c) Hybrid: base-management + onboard events | Affects entire UX |
-| O-004 | Ship customization | Pre-built ship classes vs. modular build-your-own | Classes = easier to balance monetization; modular = more depth and upsell surface |
-| O-005 | Crew as individuals | Named settlers with stats/needs vs. abstract crew pool | Individual = more attachment, gacha/collection potential; pool = more scalable |
-| O-006 | Destination variety | Random procedural planets vs. fixed solar system map | Procedural = replayability; fixed = content update cadence and seasonal events |
 | O-011 | Organization name | Needs a fictional NASA-equivalent name (can't use NASA) | Shapes UI branding, lore, and player identity |
 
 ---
