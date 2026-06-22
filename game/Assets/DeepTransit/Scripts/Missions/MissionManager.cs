@@ -55,7 +55,6 @@ namespace DeepTransit.Missions
 
             gm?.CurrencyManager?.EarnSoft(payout.GrossPayout);
             gm?.CurrencyManager?.AddReputation(payout.ReputationGain);
-            dest?.UnlocksOnFirstCompletion?.Length.ToString(); // accessed via StarMapManager
             gm?.StarMapManager?.OnMissionArrived(dest);
 
             CompletedMissions.Add(mission);
