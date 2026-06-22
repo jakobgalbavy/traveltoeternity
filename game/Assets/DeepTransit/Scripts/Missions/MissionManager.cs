@@ -40,6 +40,7 @@ namespace DeepTransit.Missions
                 }
                 else if (mission.Status == MissionStatus.Failed)
                 {
+                    ReleaseAssets(mission, GameManager.Instance);
                     OnMissionFailed?.Invoke(mission);
                     CompletedMissions.Add(mission);
                     ActiveMissions.RemoveAt(i);
@@ -57,6 +58,7 @@ namespace DeepTransit.Missions
             gm?.CurrencyManager?.AddReputation(payout.ReputationGain);
             gm?.StarMapManager?.OnMissionArrived(dest);
 
+            ReleaseAssets(mission, gm);
             CompletedMissions.Add(mission);
             OnMissionArrived?.Invoke(mission, payout);
         }
@@ -83,5 +85,18 @@ namespace DeepTransit.Missions
         }
 
         public void SetEventManager(EventManager em) => _eventManager = em;
+
+        void ReleaseAssets(Mission mission, Core.GameManager gm)
+        {
+            // Free the ship
+            var ship = gm?.ShipManager?.Ships?.Find(s => s.Name == mission.ShipName);
+            if (ship != null) ship.IsOnMission = false;
+
+            // Free all assigned contractors
+            if (gm?.ContractorManager == null) return;
+            foreach (var id in mission.AssignedContractorIds)
+                foreach (var c in gm.ContractorManager.Roster)
+                    if (c.InstanceId == id) c.IsOnMission = false;
+        }
     }
 }

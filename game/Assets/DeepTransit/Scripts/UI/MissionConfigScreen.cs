@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using DeepTransit.Core;
 using DeepTransit.Destinations;
 using DeepTransit.Cargo;
+using DeepTransit.Ships;
 
 namespace DeepTransit.UI
 {
@@ -42,8 +43,26 @@ namespace DeepTransit.UI
 
         void OnEnable()
         {
+            SetSliderMaxes();
             PopulateDestinations();
             OnCargoChanged();
+        }
+
+        void SetSliderMaxes()
+        {
+            var ship = GameManager.Instance?.ShipManager?.Ships?.Count > 0
+                ? GameManager.Instance.ShipManager.Ships[0] : null;
+            if (ship == null) return;
+            if (PassengerSlider)
+            {
+                PassengerSlider.minValue = 0;
+                PassengerSlider.maxValue = Mathf.Max(1, ship.GetStat(ShipStat.PassengerCapacity));
+            }
+            if (PackageSlider)
+            {
+                PackageSlider.minValue = 0;
+                PackageSlider.maxValue = Mathf.Max(1, ship.GetStat(ShipStat.CargoCapacity));
+            }
         }
 
         void PopulateDestinations()

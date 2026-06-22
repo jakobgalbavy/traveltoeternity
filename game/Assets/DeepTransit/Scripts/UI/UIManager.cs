@@ -26,6 +26,8 @@ namespace DeepTransit.UI
             Instance = this;
         }
 
+        void Start() => Show(Screen.Hub);
+
         public void Register(HubScreen s)          => _hub = s;
         public void Register(FleetScreen s)        => _fleet = s;
         public void Register(MissionConfigScreen s) => _missionConfig = s;
