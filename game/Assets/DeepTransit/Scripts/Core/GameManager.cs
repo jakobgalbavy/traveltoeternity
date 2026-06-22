@@ -1,5 +1,6 @@
 using UnityEngine;
 using DeepTransit.Missions;
+using DeepTransit.Ships;
 
 namespace DeepTransit.Core
 {
@@ -10,6 +11,7 @@ namespace DeepTransit.Core
         [Header("Managers")]
         public MissionManager MissionManager;
         public TimeManager TimeManager;
+        public ShipManager ShipManager;
 
         void Awake()
         {

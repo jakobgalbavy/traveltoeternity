@@ -1,5 +1,6 @@
 using UnityEngine;
 using DeepTransit.Missions;
+using DeepTransit.Ships;
 
 namespace DeepTransit.Core
 {
@@ -14,6 +15,7 @@ namespace DeepTransit.Core
             var gm = go.AddComponent<GameManager>();
             gm.TimeManager = go.AddComponent<TimeManager>();
             gm.MissionManager = go.AddComponent<MissionManager>();
+            gm.ShipManager = go.AddComponent<ShipManager>();
             DontDestroyOnLoad(go);
         }
 
