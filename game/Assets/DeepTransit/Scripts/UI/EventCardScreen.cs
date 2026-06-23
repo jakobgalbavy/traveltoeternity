@@ -126,7 +126,7 @@ namespace DeepTransit.UI
             if (resolved && isPartialOption)
                 Populate(_mission, _event);
             else
-                UIManager.Instance?.Show(Screen.Hub);
+                UIManager.Instance?.OnEventDismissed();
         }
 
         static string FormatMinutes(long minutes)

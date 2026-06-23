@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using DeepTransit.Core;
 using DeepTransit.Missions;
 using DeepTransit.Events;
 using DeepTransit.Economy;
@@ -11,14 +13,16 @@ namespace DeepTransit.UI
     {
         public static UIManager Instance { get; private set; }
 
-        HubScreen         _hub;
-        FleetScreen       _fleet;
+        HubScreen           _hub;
+        FleetScreen         _fleet;
         MissionConfigScreen _missionConfig;
-        ContractorScreen  _contractors;
-        EventCardScreen   _eventCard;
-        DebriefScreen     _debrief;
+        ContractorScreen    _contractors;
+        EventCardScreen     _eventCard;
+        DebriefScreen       _debrief;
 
         Screen _current = Screen.Hub;
+
+        readonly Queue<(Mission mission, MissionEvent ev)> _eventQueue = new();
 
         void Awake()
         {
@@ -59,12 +63,45 @@ namespace DeepTransit.UI
 
         public void ShowEvent(Mission mission, MissionEvent ev)
         {
+            if (_current == Screen.Event)
+            {
+                _eventQueue.Enqueue((mission, ev));
+                Debug.Log($"[UIManager] Event '{ev.EventId}' queued ({_eventQueue.Count} waiting).");
+                return;
+            }
+            DisplayEvent(mission, ev);
+        }
+
+        void DisplayEvent(Mission mission, MissionEvent ev)
+        {
             _eventCard?.Populate(mission, ev);
+            var tm = GameManager.Instance?.TimeManager;
+            if (tm != null) tm.Paused = true;
             Show(Screen.Event);
+        }
+
+        // Called by EventCardScreen when the player resolves or skips an event.
+        public void OnEventDismissed()
+        {
+            if (_eventQueue.Count > 0)
+            {
+                var (m, e) = _eventQueue.Dequeue();
+                Debug.Log($"[UIManager] Showing queued event '{e.EventId}' ({_eventQueue.Count} remaining).");
+                DisplayEvent(m, e);
+            }
+            else
+            {
+                var tm = GameManager.Instance?.TimeManager;
+                if (tm != null) tm.Paused = false;
+                Show(Screen.Hub);
+            }
         }
 
         public void ShowDebrief(Mission mission, PayoutResult payout)
         {
+            _eventQueue.Clear();
+            var tm = GameManager.Instance?.TimeManager;
+            if (tm != null) tm.Paused = false;
             _debrief?.Populate(mission, payout);
             Show(Screen.Debrief);
         }
