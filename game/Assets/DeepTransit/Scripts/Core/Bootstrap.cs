@@ -17,7 +17,6 @@ namespace DeepTransit.Core
         [Header("Data References")]
         public StarMapSO StarMap;
         public ContractorSO[] ContractorDefinitions;
-        public GameEventSO[] AllGameEvents;
 
         [Header("Starting Ship")]
         public ShipBlueprintSO StarterBlueprint;
@@ -42,7 +41,6 @@ namespace DeepTransit.Core
             gm.ContractorManager     = contractorMgr;
 
             var eventMgr             = go.AddComponent<EventManager>();
-            eventMgr.AllEvents       = AllGameEvents;
             gm.EventManager          = eventMgr;
 
             var uiMgr                = go.AddComponent<UIManager>();

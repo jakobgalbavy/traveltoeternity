@@ -96,8 +96,9 @@ namespace DeepTransit.UI
             if (!hasMission || missions.Count == 0) return;
             var m = missions[0];
 
-            if (MissionShipNameText)   MissionShipNameText.text   = m.ShipName;
-            if (MissionDestinationText) MissionDestinationText.text = m.DestinationId;
+            var dest = GameManager.Instance?.StarMapManager?.GetById(m.DestinationId);
+            if (MissionShipNameText)   MissionShipNameText.text    = m.ShipName;
+            if (MissionDestinationText) MissionDestinationText.text = dest != null ? $"→ {dest.DisplayName}" : m.DestinationId;
             if (MissionProgressSlider) MissionProgressSlider.value = m.ProgressNormalized;
             if (MissionStatusText)     MissionStatusText.text      = $"{m.ProgressNormalized * 100f:F0}%";
             if (MissionHullText)       MissionHullText.text        = $"Hull {m.HullIntegrity * 100f:F0}%";

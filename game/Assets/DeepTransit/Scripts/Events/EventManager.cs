@@ -15,6 +15,11 @@ namespace DeepTransit.Events
 
         private readonly System.Random _rng = new();
 
+        void Awake()
+        {
+            AllEvents = Resources.LoadAll<GameEventSO>("Events");
+        }
+
         // Called every game-hour by MissionManager.
         public void TickHour(Mission mission, long gameMinute)
         {

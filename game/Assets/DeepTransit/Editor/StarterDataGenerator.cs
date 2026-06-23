@@ -37,7 +37,7 @@ namespace DeepTransit.Editor
                 $"{Root}/Destinations", $"{Root}/Contractors", $"{Root}/Modules",
                 $"{Root}/Ships", $"{Root}/Events",
                 $"{ResRoot}/Destinations", $"{ResRoot}/Contractors",
-                $"{ResRoot}/Modules", $"{ResRoot}/Blueprints",
+                $"{ResRoot}/Modules", $"{ResRoot}/Blueprints", $"{ResRoot}/Events",
             };
             foreach (var d in dirs)
                 EnsureFolder(d);
@@ -332,13 +332,93 @@ namespace DeepTransit.Editor
                         Outcome(cargoDmg: -0.02f, msg: "Cargo re-secured. Minimal loss."),
                         Outcome(cargoDmg: -0.15f, morale: -0.05f, msg: "Securing failed. Significant cargo damaged.")),
                 }, escalation: null);
+
+            // ── NEW EVENTS ─────────────────────────────────────────────────────
+
+            Event("Event_EngineMalfunction", "Engine Malfunction", EventSeverity.Moderate,
+                "Irregular drive output detected. Thrust is degrading and structural stress is mounting. Uncorrected, the vibrations will crack the hull.",
+                0.10f, EventPrecondition.None,
+                new[]
+                {
+                    Option("Diagnostic Repair", ContractorRole.Engineer, 0.60f, 0.30f,
+                        Outcome(morale: 0.03f, msg: "Drive repaired. Output nominal."),
+                        Outcome(hullDmg: -0.10f, morale: -0.05f, msg: "Repair failed. Vibrations worsening.")),
+                    Option("Emergency Shutdown", ContractorRole.GeneralCrew, 0.78f, 0.10f,
+                        Outcome(morale: -0.05f, msg: "Drive shut down safely. Speed reduced but ship is stable."),
+                        Outcome(hullDmg: -0.08f, morale: -0.10f, msg: "Shutdown botched. Surge before cutoff.")),
+                }, escalation: breach, escalationMins: 90);
+
+            Event("Event_RadiationSurge", "Solar Radiation Surge", EventSeverity.Moderate,
+                "An unexpected solar flare is flooding the ship with hard radiation. Crew exposure is rising and sensitive cargo is at risk.",
+                0.06f, EventPrecondition.None,
+                new[]
+                {
+                    Option("Deploy Shielding", ContractorRole.HazmatSpecialist, 0.65f, 0.30f,
+                        Outcome(morale: 0.02f, msg: "Radiation baffles deployed. Exposure controlled."),
+                        Outcome(morale: -0.10f, cargoDmg: -0.05f, msg: "Shielding deployment failed. Exposure spreading.")),
+                    Option("Crew Shelter Protocol", ContractorRole.Medic, 0.75f, 0.20f,
+                        Outcome(morale: -0.05f, msg: "Crew sheltered. Radiation exposure minimal."),
+                        Outcome(morale: -0.15f, hullDmg: -0.05f, msg: "Shelter protocol too slow. Crew exposed.")),
+                }, escalation: null, escalationMins: 60);
+
+            Event("Event_NavigationDrift", "Navigation Drift", EventSeverity.Minor,
+                "Calibration error in the nav array has allowed course drift to accumulate. A correction burn is needed or we'll miss the arrival window.",
+                0.09f, EventPrecondition.None,
+                new[]
+                {
+                    Option("Recalibrate Array", ContractorRole.Navigator, 0.70f, 0.25f,
+                        Outcome(morale: 0.02f, msg: "Array recalibrated. Back on course."),
+                        Outcome(cargoDmg: -0.08f, morale: -0.05f, msg: "Calibration failed. Rough correction burn required.")),
+                    Option("Manual Override", ContractorRole.GeneralCrew, 0.48f, 0.05f,
+                        Outcome(morale: -0.03f, msg: "Manual correction complete. Slightly behind schedule."),
+                        Outcome(cargoDmg: -0.12f, morale: -0.10f, msg: "Manual correction overshoot. Cargo rattled.")),
+                }, escalation: null, escalationMins: 90);
+
+            Event("Event_CryoFault", "Cryo Bay Fault", EventSeverity.Critical,
+                "Temperature variance detected in Cryo Bay 2. Occupants are at risk of premature thaw if the fault is not isolated immediately.",
+                0.05f, EventPrecondition.HasPassengers,
+                new[]
+                {
+                    Option("Cryo Tech Intervention", ContractorRole.CryoTechnician, 0.72f, 0.28f,
+                        Outcome(morale: 0.05f, msg: "Cryo systems stabilised. All occupants safe."),
+                        Outcome(morale: -0.20f, cargoDmg: -0.05f, msg: "Fault cascaded. Multiple premature thaws.")),
+                    Option("Emergency Isolation", ContractorRole.Engineer, 0.55f, 0.25f,
+                        Outcome(morale: -0.05f, msg: "Bay isolated. Occupants transferred to contingency berths."),
+                        Outcome(morale: -0.15f, hullDmg: -0.03f, msg: "Isolation failed. Thermal runaway in bay systems.")),
+                }, escalation: null, escalationMins: 60);
+
+            Event("Event_RefrigerationFailure", "Refrigeration Failure", EventSeverity.Moderate,
+                "Cold storage units have malfunctioned. Provisions are warming rapidly. If not addressed, spoilage will cascade to the grow bay.",
+                0.08f, EventPrecondition.None,
+                new[]
+                {
+                    Option("Repair Cold Storage", ContractorRole.RefrigerationTech, 0.65f, 0.30f,
+                        Outcome(food: 0.03f, msg: "Cold storage repaired. Provisions saved."),
+                        Outcome(food: -0.15f, morale: -0.08f, msg: "Repair failed. Significant spoilage.")),
+                    Option("Emergency Rationing", ContractorRole.GeneralCrew, 0.82f, 0.08f,
+                        Outcome(food: -0.07f, morale: -0.05f, msg: "Rationing implemented. Most provisions preserved."),
+                        Outcome(food: -0.20f, morale: -0.12f, msg: "Rationing too late. Heavy spoilage.")),
+                }, escalation: cropBlight, escalationMins: 75);
+
+            Event("Event_HazardousCargo", "Hazardous Cargo Leak", EventSeverity.Moderate,
+                "Atmospheric sensors detect contamination from improperly stored freight. Crew health and hull integrity are at risk from exposure.",
+                0.06f, EventPrecondition.HasPackages,
+                new[]
+                {
+                    Option("Containment Protocol", ContractorRole.HazmatSpecialist, 0.65f, 0.35f,
+                        Outcome(morale: 0.02f, msg: "Leak contained. Atmosphere scrubbed."),
+                        Outcome(morale: -0.12f, hullDmg: -0.05f, msg: "Containment failed. Corrosive spread to hull.")),
+                    Option("Jettison Affected Cargo", ContractorRole.CargoMaster, 0.82f, 0.18f,
+                        Outcome(cargoDmg: -0.08f, msg: "Affected cargo jettisoned. Crew safe."),
+                        Outcome(cargoDmg: -0.18f, morale: -0.08f, hullDmg: -0.03f, msg: "Jettison malfunction. Leak spread.")),
+                }, escalation: null, escalationMins: 75);
         }
 
         static GameEventSO Event(string assetName, string title, EventSeverity severity,
             string desc, float chancePerHour, EventPrecondition precondition,
             EventOption[] options, GameEventSO escalation = null, long escalationMins = 120)
         {
-            var so = Make<GameEventSO>($"{Root}/Events", assetName);
+            var so = Make<GameEventSO>($"{ResRoot}/Events", assetName);
             so.Id = assetName;
             so.Title = title;
             so.Severity = severity;

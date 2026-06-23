@@ -9,7 +9,6 @@ using DeepTransit.Core;
 using DeepTransit.UI;
 using DeepTransit.Destinations;
 using DeepTransit.Contractors;
-using DeepTransit.Events;
 using DeepTransit.Ships;
 
 namespace DeepTransit.Editor
@@ -118,7 +117,6 @@ namespace DeepTransit.Editor
             };
 
             b.ContractorDefinitions = FindAll<ContractorSO>("Assets/Resources/Contractors");
-            b.AllGameEvents         = FindAll<GameEventSO>("Assets/DeepTransit/ScriptableObjects/Events");
         }
 
         // ── Canvas ───────────────────────────────────────────────────────────
