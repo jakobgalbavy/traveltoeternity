@@ -26,7 +26,7 @@ namespace DeepTransit.UI
 
         void Start()
         {
-            UIManager.Instance?.Register(this);
+
             BackButton?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Hub));
             RefreshPoolButton?.onClick.AddListener(OnRefreshPool);
             if (RefreshCostText) RefreshCostText.text = $"¤{PoolRefreshCost}";

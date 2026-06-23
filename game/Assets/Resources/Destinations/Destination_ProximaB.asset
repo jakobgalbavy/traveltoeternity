@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21af142b3632840868e58c6193c26e5c, type: 3}
+  m_Name: Destination_ProximaB
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Destinations.DestinationSO
+  Id: proxima-b
+  DisplayName: Proxima Centauri b
+  Description: "Our nearest stellar neighbour. A rocky world in the habitable zone
+    \u2014 marginal but viable."
+  DistanceLY: 4.24
+  VoyageMinutes: 240
+  PayoutMultiplier: 1.2
+  ReputationRequired: 0
+  Hazards:
+    MeteoriteRisk: 0.1
+    RadiationRisk: 0.2
+    MechanicalFailureRisk: 0.15
+    PassengerUnrestRisk: 0
+  UnlocksOnFirstCompletion:
+  - {fileID: 11400000, guid: cbdf4dff6921e493e8db9c965006170f, type: 2}

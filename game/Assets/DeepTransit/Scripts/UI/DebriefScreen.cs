@@ -29,7 +29,7 @@ namespace DeepTransit.UI
 
         void Start()
         {
-            UIManager.Instance?.Register(this);
+
             ContinueButton?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Hub));
         }
 

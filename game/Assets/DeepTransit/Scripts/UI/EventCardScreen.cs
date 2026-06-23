@@ -28,7 +28,7 @@ namespace DeepTransit.UI
         Mission      _mission;
         MissionEvent _event;
 
-        void Start() => UIManager.Instance?.Register(this);
+        void Start() { }
 
         public void Populate(Mission mission, MissionEvent ev)
         {

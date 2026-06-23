@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6095d0d909ea04dbda0d82d6d58fe81a, type: 3}
+  m_Name: Event_MeteoriteStrike
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Events.GameEventSO
+  Id: Event_MeteoriteStrike
+  Title: Meteorite Strike
+  Description: A meteorite has impacted the port side. Hull integrity is compromised.
+  Severity: 2
+  ChancePerHour: 0.03
+  Precondition: 0
+  Options:
+  - Label: Emergency Repair
+    RequiredRole: 1
+    BaseSuccessChance: 0.6
+    ContractorBonus: 0.3
+    OnSuccess:
+      HullDamage: -0.1
+      MoraleDelta: 0
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Damage contained. Hull stable.
+    OnFailure:
+      HullDamage: -0.3
+      MoraleDelta: -0.2
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Repair incomplete. Structural damage critical.
+  Escalation: {fileID: 11400000, guid: c7378a890bef84e748bcf20bbe5ddc5e, type: 2}
+  EscalationMinutes: 120

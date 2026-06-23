@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62807698eae3647228d33aaf62c0db86, type: 3}
+  m_Name: Module_Hull_Basic
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Ships.ShipModuleSO
+  DisplayName: Basic Hull Plating
+  Description: 
+  Type: 0
+  AffectedStat: 0
+  Tiers:
+  - Label: Mk.I
+    CostSoftCurrency: 0
+    UpgradeMinutes: 0
+    StatBonus: 100
+  - Label: Mk.II
+    CostSoftCurrency: 500
+    UpgradeMinutes: 60
+    StatBonus: 30
+  - Label: Mk.III
+    CostSoftCurrency: 1500
+    UpgradeMinutes: 240
+    StatBonus: 50
+  - Label: Mk.IV
+    CostSoftCurrency: 4000
+    UpgradeMinutes: 720
+    StatBonus: 80
+  - Label: Mk.V
+    CostSoftCurrency: 10000
+    UpgradeMinutes: 2880
+    StatBonus: 120

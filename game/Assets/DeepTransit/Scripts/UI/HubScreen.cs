@@ -35,6 +35,7 @@ namespace DeepTransit.UI
             if (gm == null) return;
             gm.CurrencyManager.OnChanged += Refresh;
             Refresh();
+            RefreshMissionCard();
         }
 
         void OnDisable()
@@ -45,7 +46,7 @@ namespace DeepTransit.UI
 
         void Start()
         {
-            UIManager.Instance?.Register(this);
+
             NavFleet?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Fleet));
             NavMissionConfig?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.MissionConfig));
             NavContractors?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Contractors));

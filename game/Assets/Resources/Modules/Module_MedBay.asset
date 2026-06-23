@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62807698eae3647228d33aaf62c0db86, type: 3}
+  m_Name: Module_MedBay
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Ships.ShipModuleSO
+  DisplayName: Medical Bay
+  Description: 
+  Type: 4
+  AffectedStat: 4
+  Tiers:
+  - Label: Field Kit
+    CostSoftCurrency: 0
+    UpgradeMinutes: 0
+    StatBonus: 1
+  - Label: Infirmary
+    CostSoftCurrency: 800
+    UpgradeMinutes: 150
+    StatBonus: 1
+  - Label: Surgical Suite
+    CostSoftCurrency: 2500
+    UpgradeMinutes: 600
+    StatBonus: 2

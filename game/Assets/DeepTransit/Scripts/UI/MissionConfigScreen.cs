@@ -34,7 +34,7 @@ namespace DeepTransit.UI
 
         void Start()
         {
-            UIManager.Instance?.Register(this);
+
             BackButton?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Hub));
             LaunchButton?.onClick.AddListener(OnLaunch);
             PassengerSlider?.onValueChanged.AddListener(_ => OnCargoChanged());

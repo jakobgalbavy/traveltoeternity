@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62807698eae3647228d33aaf62c0db86, type: 3}
+  m_Name: Module_LifeSupport
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Ships.ShipModuleSO
+  DisplayName: Life Support Array
+  Description: 
+  Type: 2
+  AffectedStat: 3
+  Tiers:
+  - Label: Mk.I
+    CostSoftCurrency: 0
+    UpgradeMinutes: 0
+    StatBonus: 1
+  - Label: Mk.II
+    CostSoftCurrency: 600
+    UpgradeMinutes: 90
+    StatBonus: 0.5
+  - Label: Mk.III
+    CostSoftCurrency: 1800
+    UpgradeMinutes: 360
+    StatBonus: 0.8
+  - Label: Mk.IV
+    CostSoftCurrency: 5000
+    UpgradeMinutes: 1440
+    StatBonus: 1.5

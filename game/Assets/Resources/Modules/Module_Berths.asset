@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62807698eae3647228d33aaf62c0db86, type: 3}
+  m_Name: Module_Berths
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Ships.ShipModuleSO
+  DisplayName: Passenger Berths
+  Description: 
+  Type: 5
+  AffectedStat: 1
+  Tiers:
+  - Label: "Spartan \xD710"
+    CostSoftCurrency: 0
+    UpgradeMinutes: 0
+    StatBonus: 10
+  - Label: "Standard \xD75"
+    CostSoftCurrency: 600
+    UpgradeMinutes: 90
+    StatBonus: 5
+  - Label: "Comfort \xD75"
+    CostSoftCurrency: 1800
+    UpgradeMinutes: 360
+    StatBonus: 5
+  - Label: "Premium \xD710"
+    CostSoftCurrency: 5000
+    UpgradeMinutes: 1800
+    StatBonus: 10

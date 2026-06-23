@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6095d0d909ea04dbda0d82d6d58fe81a, type: 3}
+  m_Name: Event_HullLeak
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Events.GameEventSO
+  Id: Event_HullLeak
+  Title: Hull Micro-Leak
+  Description: A hairline fracture has been detected in the outer hull. Pressure
+    is slowly dropping.
+  Severity: 0
+  ChancePerHour: 0.08
+  Precondition: 0
+  Options:
+  - Label: Repair Crew
+    RequiredRole: 1
+    BaseSuccessChance: 0.7
+    ContractorBonus: 0.2
+    OnSuccess:
+      HullDamage: 0
+      MoraleDelta: 0.05
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Leak patched. No further damage.
+    OnFailure:
+      HullDamage: -0.1
+      MoraleDelta: -0.05
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Repair failed. Leak worsened.
+  - Label: Temporary Sealant
+    RequiredRole: 0
+    BaseSuccessChance: 0.5
+    ContractorBonus: 0.1
+    OnSuccess:
+      HullDamage: -0.03
+      MoraleDelta: 0
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Sealant applied. Buys some time.
+    OnFailure:
+      HullDamage: -0.08
+      MoraleDelta: -0.1
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Sealant failed. Leak spreading.
+  Escalation: {fileID: 11400000, guid: c7378a890bef84e748bcf20bbe5ddc5e, type: 2}
+  EscalationMinutes: 120

@@ -31,7 +31,7 @@ namespace DeepTransit.UI
 
         void Start()
         {
-            UIManager.Instance?.Register(this);
+
             BackButton?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Hub));
             RenameButton?.onClick.AddListener(OnRename);
         }
