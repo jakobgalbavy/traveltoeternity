@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Events.GameEventSO
   Id: Event_CropBlight
   Title: Crop Blight
-  Description: A fungal infection has spread through the grow bay. Food production
-    is at risk.
+  Description: A fungal infection has spread through the grow bay. The crew is too
+    impaired to tend it.
   Severity: 1
   ChancePerHour: 0.06
   Precondition: 0
@@ -24,6 +24,7 @@ MonoBehaviour:
     RequiredRole: 2
     BaseSuccessChance: 0.6
     ContractorBonus: 0.3
+    IsPartialFix: 0
     OnSuccess:
       HullDamage: 0
       MoraleDelta: 0.05
@@ -36,10 +37,11 @@ MonoBehaviour:
       CargoDamage: 0
       FoodDelta: -0.2
       LogMessage: Blight spread. Significant crop loss.
-  - Label: Harvest Early
+  - Label: Emergency Harvest
     RequiredRole: 0
     BaseSuccessChance: 0.8
     ContractorBonus: 0.1
+    IsPartialFix: 0
     OnSuccess:
       HullDamage: 0
       MoraleDelta: 0
@@ -53,4 +55,4 @@ MonoBehaviour:
       FoodDelta: -0.15
       LogMessage: Early harvest botched. Heavy spoilage.
   Escalation: {fileID: 0}
-  EscalationMinutes: 120
+  EscalationMinutes: 180

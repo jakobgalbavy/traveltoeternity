@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Events.GameEventSO
   Id: Event_HullBreach
   Title: Hull Breach
-  Description: A section of hull has failed. Decompression in progress.
+  Description: "A section of hull has failed. Decompression in progress \u2014 oxygen
+    is venting."
   Severity: 2
   ChancePerHour: 0.02
   Precondition: 3
@@ -23,6 +24,7 @@ MonoBehaviour:
     RequiredRole: 1
     BaseSuccessChance: 0.5
     ContractorBonus: 0.35
+    IsPartialFix: 0
     OnSuccess:
       HullDamage: -0.15
       MoraleDelta: -0.1
@@ -35,5 +37,5 @@ MonoBehaviour:
       CargoDamage: 0
       FoodDelta: 0
       LogMessage: Seal failed. Major decompression event.
-  Escalation: {fileID: 0}
-  EscalationMinutes: 120
+  Escalation: {fileID: 11400000, guid: 91202674ea28c4ea28366e3bb143734b, type: 2}
+  EscalationMinutes: 60

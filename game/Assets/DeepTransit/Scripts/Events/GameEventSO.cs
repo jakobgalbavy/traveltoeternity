@@ -43,6 +43,9 @@ namespace DeepTransit.Events
         [Tooltip("Added to success chance when the required contractor is assigned.")]
         [Range(0f, 1f)] public float ContractorBonus;
 
+        [Tooltip("Success extends the escalation deadline rather than closing the event. Models a temporary patch.")]
+        public bool IsPartialFix;
+
         public EventOutcome OnSuccess;
         public EventOutcome OnFailure;
     }

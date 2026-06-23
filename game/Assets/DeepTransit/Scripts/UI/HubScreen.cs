@@ -46,7 +46,6 @@ namespace DeepTransit.UI
 
         void Start()
         {
-
             NavFleet?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Fleet));
             NavMissionConfig?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.MissionConfig));
             NavContractors?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Contractors));

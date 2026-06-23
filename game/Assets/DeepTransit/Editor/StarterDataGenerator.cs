@@ -220,17 +220,61 @@ namespace DeepTransit.Editor
 
         static void CreateEvents()
         {
-            // Hull micro-leak → Hull breach (escalation)
+            // ── HULL FAILURE CHAIN ─────────────────────────────────────────────
+            // Leak → Breach → OxygenLoss → CrewHypoxia → CropBlight
+            // Each link escalates to the next if left unresolved past its deadline.
+
+            var cropBlight = Event("Event_CropBlight", "Crop Blight", EventSeverity.Moderate,
+                "A fungal infection has spread through the grow bay. The crew is too impaired to tend it.",
+                0.06f, EventPrecondition.None,
+                new[]
+                {
+                    Option("Treat Infection", ContractorRole.Botanist, 0.6f, 0.3f,
+                        Outcome(food: 0f, morale: 0.05f, msg: "Blight contained. Crops recovering."),
+                        Outcome(food: -0.2f, morale: -0.15f, msg: "Blight spread. Significant crop loss.")),
+                    Option("Emergency Harvest", ContractorRole.GeneralCrew, 0.8f, 0.1f,
+                        Outcome(food: -0.05f, morale: 0f, msg: "Early harvest completed. Some loss."),
+                        Outcome(food: -0.15f, morale: -0.05f, msg: "Early harvest botched. Heavy spoilage.")),
+                }, escalation: null, escalationMins: 180);
+
+            // ChancePerHour = 0 → only reachable via chain escalation, never fires randomly.
+            var crewHypoxia = Event("Event_CrewHypoxia", "Crew Hypoxia", EventSeverity.Critical,
+                "CO₂ saturation is dangerously high. Crew are incapacitated and unable to maintain ship systems.",
+                0f, EventPrecondition.None,
+                new[]
+                {
+                    Option("Emergency Scrubber Override", ContractorRole.Engineer, 0.55f, 0.35f,
+                        Outcome(morale: -0.1f, msg: "Scrubbers cleared. Crew recovering slowly."),
+                        Outcome(morale: -0.3f, hullDmg: -0.05f, msg: "Override failed. Crew incapacitation deepens.")),
+                    Option("Administer Stimulants", ContractorRole.Medic, 0.7f, 0.25f,
+                        Outcome(morale: -0.05f, msg: "Stimulants buying time. Oxygen situation still critical."),
+                        Outcome(morale: -0.2f, msg: "Stimulants ineffective. Crew deteriorating.")),
+                }, escalation: cropBlight, escalationMins: 60);
+
+            var oxygenLoss = Event("Event_OxygenLoss", "Oxygen Depletion", EventSeverity.Critical,
+                "Cabin pressure is falling. The breach has compromised the oxygen recycler loop.",
+                0f, EventPrecondition.None,
+                new[]
+                {
+                    Option("Reroute Life Support", ContractorRole.Engineer, 0.6f, 0.3f,
+                        Outcome(morale: -0.1f, msg: "Life support rerouted. O₂ levels stabilising."),
+                        Outcome(morale: -0.2f, hullDmg: -0.05f, msg: "Reroute failed. Pressure still dropping.")),
+                    Option("Emergency O₂ Canisters", ContractorRole.GeneralCrew, 0.85f, 0.1f,
+                        Outcome(morale: 0f, msg: "Canisters deployed. Buys time but won't last."),
+                        Outcome(morale: -0.1f, msg: "Canister deployment too slow. CO₂ rising.")),
+                }, escalation: crewHypoxia, escalationMins: 45);
+
             var breach = Event("Event_HullBreach", "Hull Breach", EventSeverity.Critical,
-                "A section of hull has failed. Decompression in progress.", 0.02f, EventPrecondition.LowHull,
+                "A section of hull has failed. Decompression in progress — oxygen is venting.",
+                0.02f, EventPrecondition.LowHull,
                 new[]
                 {
                     Option("Emergency Seal", ContractorRole.Engineer, 0.5f, 0.35f,
                         Outcome(hullDmg: -0.15f, morale: -0.1f, msg: "Breach sealed. Structural integrity reduced."),
                         Outcome(hullDmg: -0.35f, morale: -0.25f, msg: "Seal failed. Major decompression event.")),
-                }, escalation: null);
+                }, escalation: oxygenLoss, escalationMins: 60);
 
-            var leak = Event("Event_HullLeak", "Hull Micro-Leak", EventSeverity.Minor,
+            Event("Event_HullLeak", "Hull Micro-Leak", EventSeverity.Minor,
                 "A hairline fracture has been detected in the outer hull. Pressure is slowly dropping.",
                 0.08f, EventPrecondition.None,
                 new[]
@@ -239,22 +283,12 @@ namespace DeepTransit.Editor
                         Outcome(hullDmg: 0f, morale: 0.05f, msg: "Leak patched. No further damage."),
                         Outcome(hullDmg: -0.1f, morale: -0.05f, msg: "Repair failed. Leak worsened.")),
                     Option("Temporary Sealant", ContractorRole.GeneralCrew, 0.5f, 0.1f,
-                        Outcome(hullDmg: -0.03f, morale: 0f, msg: "Sealant applied. Buys some time."),
-                        Outcome(hullDmg: -0.08f, morale: -0.1f, msg: "Sealant failed. Leak spreading.")),
-                }, escalation: breach);
+                        Outcome(hullDmg: -0.02f, morale: 0f, msg: "Sealant applied. Buys time but the leak persists."),
+                        Outcome(hullDmg: -0.08f, morale: -0.1f, msg: "Sealant failed. Leak spreading."),
+                        isPartialFix: true),
+                }, escalation: breach, escalationMins: 120);
 
-            Event("Event_CropBlight", "Crop Blight", EventSeverity.Moderate,
-                "A fungal infection has spread through the grow bay. Food production is at risk.",
-                0.06f, EventPrecondition.None,
-                new[]
-                {
-                    Option("Treat Infection", ContractorRole.Botanist, 0.6f, 0.3f,
-                        Outcome(food: 0f, morale: 0.05f, msg: "Blight contained. Crops recovering."),
-                        Outcome(food: -0.2f, morale: -0.15f, msg: "Blight spread. Significant crop loss.")),
-                    Option("Harvest Early", ContractorRole.GeneralCrew, 0.8f, 0.1f,
-                        Outcome(food: -0.05f, morale: 0f, msg: "Early harvest completed. Some loss."),
-                        Outcome(food: -0.15f, morale: -0.05f, msg: "Early harvest botched. Heavy spoilage.")),
-                }, escalation: null);
+            // ── STANDALONE EVENTS ──────────────────────────────────────────────
 
             Event("Event_PassengerConflict", "Passenger Conflict", EventSeverity.Moderate,
                 "A fight has broken out between colonist factions. Morale on deck is deteriorating.",
@@ -319,11 +353,12 @@ namespace DeepTransit.Editor
         }
 
         static EventOption Option(string label, ContractorRole role, float baseChance, float bonus,
-            EventOutcome onSuccess, EventOutcome onFailure) =>
+            EventOutcome onSuccess, EventOutcome onFailure, bool isPartialFix = false) =>
             new EventOption
             {
                 Label = label, RequiredRole = role,
                 BaseSuccessChance = baseChance, ContractorBonus = bonus,
+                IsPartialFix = isPartialFix,
                 OnSuccess = onSuccess, OnFailure = onFailure,
             };
 

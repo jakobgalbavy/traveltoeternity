@@ -29,16 +29,20 @@ namespace DeepTransit.UI
         void Start()
         {
             // Discover screens directly — they may be inactive so can't self-register via Start()
-            var canvas = FindObjectOfType<Canvas>();
-            if (canvas != null)
+            var canvas = FindAnyObjectByType<Canvas>();
+            if (canvas == null)
             {
-                _hub           = canvas.GetComponentInChildren<HubScreen>(true);
-                _fleet         = canvas.GetComponentInChildren<FleetScreen>(true);
-                _missionConfig = canvas.GetComponentInChildren<MissionConfigScreen>(true);
-                _contractors   = canvas.GetComponentInChildren<ContractorScreen>(true);
-                _eventCard     = canvas.GetComponentInChildren<EventCardScreen>(true);
-                _debrief       = canvas.GetComponentInChildren<DebriefScreen>(true);
+                Debug.LogError("[UIManager] No Canvas found. Run Tools → Deep Transit → Build Scene.");
+                return;
             }
+
+            _hub           = canvas.GetComponentInChildren<HubScreen>(true);
+            _fleet         = canvas.GetComponentInChildren<FleetScreen>(true);
+            _missionConfig = canvas.GetComponentInChildren<MissionConfigScreen>(true);
+            _contractors   = canvas.GetComponentInChildren<ContractorScreen>(true);
+            _eventCard     = canvas.GetComponentInChildren<EventCardScreen>(true);
+            _debrief       = canvas.GetComponentInChildren<DebriefScreen>(true);
+
             Show(Screen.Hub);
         }
 

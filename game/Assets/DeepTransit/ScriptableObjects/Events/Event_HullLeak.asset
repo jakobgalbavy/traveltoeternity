@@ -24,6 +24,7 @@ MonoBehaviour:
     RequiredRole: 1
     BaseSuccessChance: 0.7
     ContractorBonus: 0.2
+    IsPartialFix: 0
     OnSuccess:
       HullDamage: 0
       MoraleDelta: 0.05
@@ -40,12 +41,13 @@ MonoBehaviour:
     RequiredRole: 0
     BaseSuccessChance: 0.5
     ContractorBonus: 0.1
+    IsPartialFix: 1
     OnSuccess:
-      HullDamage: -0.03
+      HullDamage: -0.02
       MoraleDelta: 0
       CargoDamage: 0
       FoodDelta: 0
-      LogMessage: Sealant applied. Buys some time.
+      LogMessage: Sealant applied. Buys time but the leak persists.
     OnFailure:
       HullDamage: -0.08
       MoraleDelta: -0.1

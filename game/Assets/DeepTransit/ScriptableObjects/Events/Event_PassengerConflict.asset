@@ -24,6 +24,7 @@ MonoBehaviour:
     RequiredRole: 7
     BaseSuccessChance: 0.65
     ContractorBonus: 0.3
+    IsPartialFix: 0
     OnSuccess:
       HullDamage: 0
       MoraleDelta: 0.1
@@ -40,6 +41,7 @@ MonoBehaviour:
     RequiredRole: 5
     BaseSuccessChance: 0.7
     ContractorBonus: 0.25
+    IsPartialFix: 0
     OnSuccess:
       HullDamage: 0
       MoraleDelta: -0.05

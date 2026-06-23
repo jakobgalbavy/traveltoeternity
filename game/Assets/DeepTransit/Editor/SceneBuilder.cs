@@ -35,6 +35,12 @@ namespace DeepTransit.Editor
         [MenuItem("Tools/Deep Transit/Build Scene")]
         public static void Build()
         {
+            if (UnityEditor.EditorApplication.isPlaying)
+            {
+                Debug.LogError("[DTA] Stop Play mode before running Build Scene.");
+                return;
+            }
+
             if (!AssetDatabase.IsValidFolder("Assets/Resources/Modules"))
             {
                 Debug.LogError("[DTA] Run 'Tools → Deep Transit → Generate Starter Data' first.");
@@ -126,7 +132,7 @@ namespace DeepTransit.Editor
             var scaler = go.AddComponent<CanvasScaler>();
             scaler.uiScaleMode       = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1080, 1920);
-            scaler.matchWidthOrHeight  = 0.5f;
+            scaler.matchWidthOrHeight  = 1f;  // match height — correct for portrait
 
             go.AddComponent<GraphicRaycaster>();
             go.AddComponent<Image>().color = C_BG;
@@ -153,7 +159,7 @@ namespace DeepTransit.Editor
 
             // Mission card
             var card = Pnl("MissionCard", root.transform, C_PANEL);
-            Anchors(card, 0.04f, 0.22f, 0.96f, 0.90f, 0, 0, 0, 0);
+            Anchors(card, 0.04f, 0.24f, 0.96f, 0.90f, 0, 0, 0, 0);
             var cardL = card.AddComponent<VerticalLayoutGroup>();
             cardL.childAlignment = TextAnchor.UpperLeft;
             cardL.spacing = 12; cardL.padding = new RectOffset(25, 25, 20, 20);
@@ -174,7 +180,7 @@ namespace DeepTransit.Editor
 
             // No-mission panel
             var noMis = Pnl("NoMission", root.transform, C_PANEL);
-            Anchors(noMis, 0.04f, 0.22f, 0.96f, 0.90f, 0, 0, 0, 0);
+            Anchors(noMis, 0.04f, 0.24f, 0.96f, 0.90f, 0, 0, 0, 0);
             var noMisL = noMis.AddComponent<VerticalLayoutGroup>();
             noMisL.childAlignment = TextAnchor.MiddleCenter;
             noMisL.childForceExpandWidth = true; noMisL.childForceExpandHeight = false;
@@ -182,17 +188,25 @@ namespace DeepTransit.Editor
             Txt("Label", noMis.transform, "No active mission",       40, C_DIM, TextAnchor.MiddleCenter);
             Txt("Sub",   noMis.transform, "Launch one to begin.",    28, C_DIM, TextAnchor.MiddleCenter);
 
-            // Nav bar
+            // Nav bar — explicit thirds, no LayoutGroup (LayoutGroup + stretch-anchored Btn() = zero-size)
             var nav = Pnl("NavBar", root.transform, C_PANEL);
-            Anchors(nav, 0, 0, 1, 0.12f, 0, 0, 0, 0);
-            var navL = nav.AddComponent<HorizontalLayoutGroup>();
-            navL.childAlignment = TextAnchor.MiddleCenter;
-            navL.spacing = 15; navL.padding = new RectOffset(15, 15, 10, 10);
-            navL.childForceExpandWidth = true; navL.childForceExpandHeight = true;
+            Anchors(nav, 0, 0, 1, 0.16f, 0, 0, 0, 0);
 
-            hub.NavFleet         = Btn("FleetBtn",    nav.transform, "Fleet",          C_PANEL,  C_TEXT);
-            hub.NavMissionConfig = Btn("LaunchBtn",   nav.transform, "Launch Mission", C_ACCENT, Color.white);
-            hub.NavContractors   = Btn("CrewBtn",     nav.transform, "Contractors",    C_PANEL,  C_TEXT);
+            hub.NavFleet = Btn("FleetBtn", nav.transform, "Fleet", C_PANEL, C_TEXT);
+            Anchors(hub.NavFleet.gameObject, 0f, 0f, 1f / 3f, 1f, 6, 8, -3, -8);
+
+            hub.NavMissionConfig = Btn("LaunchBtn", nav.transform, "Launch\nMission", C_ACCENT, Color.white);
+            Anchors(hub.NavMissionConfig.gameObject, 1f / 3f, 0f, 2f / 3f, 1f, 3, 8, -3, -8);
+
+            hub.NavContractors = Btn("CrewBtn", nav.transform, "Contractors", C_PANEL, C_TEXT);
+            Anchors(hub.NavContractors.gameObject, 2f / 3f, 0f, 1f, 1f, 3, 8, -6, -8);
+
+            foreach (var b in new[] { hub.NavFleet, hub.NavMissionConfig, hub.NavContractors })
+            {
+                var t = b.GetComponentInChildren<Text>();
+                t.fontSize = 42;
+                t.horizontalOverflow = HorizontalWrapMode.Wrap;
+            }
 
             EditorUtility.SetDirty(root);
         }
@@ -340,10 +354,13 @@ namespace DeepTransit.Editor
             screen.ShipNameText    = Txt("ShipName",    root.transform, "ISV Pathfinder",        30, C_DIM,   TextAnchor.UpperCenter);
             screen.DescriptionText = Txt("Description", root.transform, "Event description.",    30, C_TEXT,  TextAnchor.UpperLeft);
 
-            Anchors(screen.SeverityText.gameObject,    0, 0.82f, 1, 0.92f, 20, 0, -20, 0);
-            Anchors(screen.TitleText.gameObject,       0, 0.72f, 1, 0.82f, 20, 0, -20, 0);
-            Anchors(screen.ShipNameText.gameObject,    0, 0.67f, 1, 0.72f, 20, 0, -20, 0);
-            Anchors(screen.DescriptionText.gameObject, 0, 0.54f, 1, 0.67f, 20, 0, -20, 0);
+            Anchors(screen.SeverityText.gameObject,    0, 0.76f, 1, 0.85f, 20, 0, -20, 0);
+            Anchors(screen.TitleText.gameObject,       0, 0.66f, 1, 0.76f, 20, 0, -20, 0);
+            Anchors(screen.ShipNameText.gameObject,    0, 0.61f, 1, 0.66f, 20, 0, -20, 0);
+            Anchors(screen.DescriptionText.gameObject, 0, 0.48f, 1, 0.61f, 20, 0, -20, 0);
+
+            screen.CountdownText = Txt("Countdown", root.transform, "", 28, C_WARN, TextAnchor.MiddleCenter);
+            Anchors(screen.CountdownText.gameObject, 0, 0.86f, 1, 0.92f, 20, 0, -20, 0);
 
             var statRow = HRow("StatRow", root.transform, 15);
             Anchors(statRow, 0, 0.47f, 1, 0.54f, 20, 5, -20, -5);
@@ -497,6 +514,8 @@ namespace DeepTransit.Editor
             var txt = tGo.AddComponent<Text>();
             txt.text = label; txt.fontSize = 30; txt.color = fg;
             txt.alignment = TextAnchor.MiddleCenter; txt.font = _font;
+            txt.horizontalOverflow = HorizontalWrapMode.Wrap;
+            txt.verticalOverflow   = VerticalWrapMode.Overflow;
             Full(tGo.GetComponent<RectTransform>());
             return btn;
         }

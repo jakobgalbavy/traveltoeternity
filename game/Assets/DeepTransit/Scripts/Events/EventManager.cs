@@ -20,16 +20,16 @@ namespace DeepTransit.Events
         {
             if (mission.Status != Missions.MissionStatus.InTransit) return;
 
-            // Check for escalations first.
+            // Collect overdue events first to avoid modifying the list mid-iteration.
+            var overdue = new List<MissionEvent>();
             foreach (var ev in mission.ActiveEvents)
             {
                 if (ev.IsOverdue(gameMinute))
-                {
-                    Escalate(mission, ev, gameMinute);
-                }
+                    overdue.Add(ev);
             }
+            foreach (var ev in overdue)
+                Escalate(mission, ev, gameMinute);
 
-            // Try to fire a new event.
             var fired = TryFireEvent(mission, gameMinute);
             if (fired != null)
                 OnEventFired?.Invoke(mission, fired);
@@ -39,14 +39,15 @@ namespace DeepTransit.Events
         {
             if (AllEvents == null) return null;
 
-            // Shuffle so events don't always fire in definition order.
             var candidates = new List<GameEventSO>(AllEvents);
             candidates.Sort((_, __) => _rng.Next(-1, 2));
 
             foreach (var evSO in candidates)
             {
+                if (evSO.ChancePerHour <= 0f) continue;
                 if (!MeetsPrecondition(evSO, mission)) continue;
                 if (_rng.NextDouble() > evSO.ChancePerHour) continue;
+                if (IsAlreadyActive(mission, evSO.Id)) continue;
 
                 var ev = new MissionEvent
                 {
@@ -64,7 +65,7 @@ namespace DeepTransit.Events
         // Player resolves an event by picking an option and assigning a contractor (can be null).
         public bool Resolve(Mission mission, MissionEvent ev, int optionIndex, ContractorInstance contractor)
         {
-            if (ev.IsResolved || optionIndex >= ev.Definition.Options.Length) return false;
+            if (ev.IsResolved || ev.IsEscalated || optionIndex >= ev.Definition.Options.Length) return false;
 
             var option = ev.Definition.Options[optionIndex];
             float chance = option.BaseSuccessChance;
@@ -72,8 +73,23 @@ namespace DeepTransit.Events
                 chance += option.ContractorBonus * contractor.SuccessChance;
 
             bool success = (float)_rng.NextDouble() <= Mathf.Clamp01(chance);
-            var outcome = success ? option.OnSuccess : option.OnFailure;
 
+            if (success && option.IsPartialFix)
+            {
+                // Partial fix: apply reduced outcome, extend the deadline, stay active.
+                ApplyOutcome(mission, option.OnSuccess);
+                ev.IsPartiallyResolved = true;
+                ev.PartialFixCount++;
+                ev.EscalatesAtMinute += ev.Definition.EscalationMinutes;
+
+                if (contractor != null)
+                    contractor.AddExperience(0.02f);
+
+                OnEventResolved?.Invoke(mission, ev, true);
+                return true;
+            }
+
+            var outcome = success ? option.OnSuccess : option.OnFailure;
             ApplyOutcome(mission, outcome);
             ev.IsResolved = true;
             ev.ResolutionLog = outcome.LogMessage;
@@ -90,12 +106,15 @@ namespace DeepTransit.Events
             ev.IsEscalated = true;
             if (ev.Definition.Escalation == null) return;
 
+            var next = ev.Definition.Escalation;
+            if (IsAlreadyActive(mission, next.Id)) return;
+
             var escalated = new MissionEvent
             {
-                EventId = ev.Definition.Escalation.Id,
-                Definition = ev.Definition.Escalation,
+                EventId = next.Id,
+                Definition = next,
                 FiredAtMinute = gameMinute,
-                EscalatesAtMinute = gameMinute + ev.Definition.Escalation.EscalationMinutes,
+                EscalatesAtMinute = gameMinute + next.EscalationMinutes,
             };
             mission.ActiveEvents.Add(escalated);
             OnEventFired?.Invoke(mission, escalated);
@@ -123,6 +142,14 @@ namespace DeepTransit.Events
                 EventPrecondition.LowFood       => mission.FoodSupply < 0.2f,
                 _                               => true,
             };
+        }
+
+        bool IsAlreadyActive(Mission mission, string eventId)
+        {
+            foreach (var ev in mission.ActiveEvents)
+                if (!ev.IsResolved && !ev.IsEscalated && ev.EventId == eventId)
+                    return true;
+            return false;
         }
     }
 }

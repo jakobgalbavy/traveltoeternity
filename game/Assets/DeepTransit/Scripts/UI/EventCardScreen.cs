@@ -25,10 +25,33 @@ namespace DeepTransit.UI
         public Text CargoText;
         public Text FoodText;
 
+        [Header("Urgency")]
+        public Text CountdownText;
+
         Mission      _mission;
         MissionEvent _event;
 
         void Start() { }
+
+        void Update()
+        {
+            if (_event == null || CountdownText == null) return;
+            var gm = GameManager.Instance;
+            if (gm == null) return;
+
+            long minsLeft = _event.MinutesUntilEscalation(gm.TimeManager.ElapsedGameMinutes);
+            if (_event.Definition?.Escalation != null)
+            {
+                string urgency = minsLeft < 30 ? "CRITICAL — " : minsLeft < 60 ? "URGENT — " : "";
+                CountdownText.text = minsLeft > 0
+                    ? $"{urgency}Escalates in {FormatMinutes(minsLeft)}"
+                    : "Overdue";
+            }
+            else
+            {
+                CountdownText.text = string.Empty;
+            }
+        }
 
         public void Populate(Mission mission, MissionEvent ev)
         {
@@ -37,7 +60,7 @@ namespace DeepTransit.UI
 
             if (TitleText)       TitleText.text       = ev.Definition.Title;
             if (SeverityText)    SeverityText.text     = ev.Definition.Severity.ToString().ToUpper();
-            if (DescriptionText) DescriptionText.text  = ev.Definition.Description;
+            if (DescriptionText) DescriptionText.text  = BuildDescription(ev);
             if (ShipNameText)    ShipNameText.text      = mission.ShipName;
 
             if (HullText)   HullText.text   = $"Hull {mission.HullIntegrity * 100f:F0}%";
@@ -46,6 +69,14 @@ namespace DeepTransit.UI
             if (FoodText)   FoodText.text   = $"Food {mission.FoodSupply * 100f:F0}%";
 
             BuildOptions();
+        }
+
+        string BuildDescription(MissionEvent ev)
+        {
+            string desc = ev.Definition.Description;
+            if (ev.IsPartiallyResolved && ev.PartialFixCount > 0)
+                desc += $"\n\n[Patched ×{ev.PartialFixCount} — root cause unresolved]";
+            return desc;
         }
 
         void BuildOptions()
@@ -71,8 +102,10 @@ namespace DeepTransit.UI
                     ? $" [{contractor.DisplayName}]"
                     : $" [No {option.RequiredRole}]";
 
+                string partialTag = option.IsPartialFix ? " (Temp Fix)" : "";
+
                 if (texts.Length > 0)
-                    texts[0].text = $"{option.Label}{contractorStr}  {chance * 100f:F0}%";
+                    texts[0].text = $"{option.Label}{contractorStr}{partialTag}  {chance * 100f:F0}%";
 
                 int optIdx = i;
                 btn?.onClick.AddListener(() => OnChooseOption(optIdx, contractor));
@@ -84,8 +117,24 @@ namespace DeepTransit.UI
             var gm = GameManager.Instance;
             if (gm == null || _mission == null || _event == null) return;
 
-            gm.EventManager.Resolve(_mission, _event, optionIndex, contractor);
-            UIManager.Instance?.Show(Screen.Hub);
+            bool resolved = gm.EventManager.Resolve(_mission, _event, optionIndex, contractor);
+
+            // If the option was a partial fix, stay on the card so the player can see updated state.
+            bool isPartialOption = optionIndex < (_event.Definition?.Options?.Length ?? 0)
+                && _event.Definition.Options[optionIndex].IsPartialFix;
+
+            if (resolved && isPartialOption)
+                Populate(_mission, _event);
+            else
+                UIManager.Instance?.Show(Screen.Hub);
+        }
+
+        static string FormatMinutes(long minutes)
+        {
+            if (minutes < 60) return $"{minutes}m";
+            long h = minutes / 60;
+            long m = minutes % 60;
+            return m > 0 ? $"{h}h {m}m" : $"{h}h";
         }
     }
 }
