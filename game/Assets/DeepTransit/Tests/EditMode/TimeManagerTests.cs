@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEngine;
 using DeepTransit.Core;
 
 namespace DeepTransit.Tests
@@ -21,6 +22,27 @@ namespace DeepTransit.Tests
         public void HoursToGameMinutes_HalfHour_Returns30()
         {
             Assert.AreEqual(30L, TimeManager.HoursToGameMinutes(0.5f));
+        }
+
+        // ── Paused flag ───────────────────────────────────────────────────────
+
+        [Test]
+        public void Paused_DefaultsToFalse()
+        {
+            var go = new GameObject();
+            var tm = go.AddComponent<TimeManager>();
+            Assert.IsFalse(tm.Paused);
+            Object.DestroyImmediate(go);
+        }
+
+        [Test]
+        public void Paused_CanBeSetAndRead()
+        {
+            var go = new GameObject();
+            var tm = go.AddComponent<TimeManager>();
+            tm.Paused = true;
+            Assert.IsTrue(tm.Paused);
+            Object.DestroyImmediate(go);
         }
     }
 }

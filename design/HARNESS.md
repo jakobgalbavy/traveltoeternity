@@ -33,7 +33,7 @@ This is the master index for all design documentation. Every significant decisio
 | Monetization strategy | DRAFT | Priority Mission event cadence to tune |
 | Mobile loop | DRAFT | Session length targets + notification copy |
 | Core loop | DRAFT | Update for god-view UX |
-| Event system | DRAFT | Define event queue / pending-decision card UX |
+| Event system | DONE | Event queue + time-pause UX implemented (see D-020) |
 | Crew system | DRAFT | Decide O-005 (individuals vs pool) |
 | Economy | DRAFT | Validate payout formula with numbers |
 | Game name | DECIDED (Deep Transit) | — |

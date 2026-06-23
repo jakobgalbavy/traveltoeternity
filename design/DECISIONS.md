@@ -26,6 +26,8 @@ This file tracks design decisions: **open** (needs a choice), **decided** (locke
 | D-016 | Game name | Deep Transit | Confirmed by user |
 | D-017 | Cargo system | Two separate progression trees: Passengers and Packages | Each tree has its own upgrades, specialist contractors, events, and risk profile. Ships can specialize or mix. |
 | D-018 | Ship naming | Player-customizable ship names | Named on commissioning; name appears in all mission logs, event reports, and comms |
+| D-019 | Agency name | Deep Transit Authority (DTA) | Player runs the DTA. Appears in all UI chrome, comms, lore. |
+| D-020 | Event card UX | Queue events + pause game time while card is open | Events that fire while player is reading a card are queued and shown one-by-one after dismiss. Time (and escalation countdown) is frozen while any event card is visible. Queue is cleared on mission end (debrief). |
 
 ---
 
@@ -34,7 +36,6 @@ This file tracks design decisions: **open** (needs a choice), **decided** (locke
 | # | Decision | Options | Notes |
 |---|----------|---------|-------|
 | O-001 | Player perspective | (a) God-view mission planner, (b) First-person onboard character, (c) Hybrid: base-management + onboard events | Affects entire UX |
-| D-019 | Agency name | Deep Transit Authority (DTA) | Player runs the DTA. Appears in all UI chrome, comms, lore. |
 
 ---
 
