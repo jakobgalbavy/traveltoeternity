@@ -15,12 +15,13 @@ namespace DeepTransit.Core
         public static event Action<long> OnGameMinuteTick;
 
         public long ElapsedGameMinutes { get; private set; }
+        public int  SpeedMultiplier    { get; set; } = 1;
 
         private float _accumulator;
 
         void Update()
         {
-            _accumulator += Time.deltaTime;
+            _accumulator += Time.deltaTime * SpeedMultiplier;
             while (_accumulator >= RealSecondsPerGameMinute)
             {
                 _accumulator -= RealSecondsPerGameMinute;

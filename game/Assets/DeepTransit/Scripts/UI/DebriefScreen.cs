@@ -35,10 +35,16 @@ namespace DeepTransit.UI
 
         public void Populate(Mission mission, PayoutResult payout)
         {
+            bool success = mission.Status == MissionStatus.Arrived;
             if (ShipNameText)    ShipNameText.text    = mission.ShipName;
             if (DestinationText) DestinationText.text = mission.DestinationId;
-            if (OutcomeText)     OutcomeText.text      = mission.Status == MissionStatus.Arrived
-                ? "MISSION COMPLETE" : "MISSION FAILED";
+            if (OutcomeText)
+            {
+                OutcomeText.text  = success ? "MISSION COMPLETE" : "MISSION FAILED";
+                OutcomeText.color = success
+                    ? new Color(0.25f, 0.85f, 0.45f)
+                    : new Color(0.92f, 0.30f, 0.10f);
+            }
 
             if (PassengerRevenueText) PassengerRevenueText.text = $"Passenger revenue:  ¤{payout.PassengerRevenue:N0}";
             if (PackageRevenueText)   PackageRevenueText.text   = $"Package revenue:    ¤{payout.PackageRevenue:N0}";

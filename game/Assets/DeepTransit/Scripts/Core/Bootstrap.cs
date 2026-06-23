@@ -64,6 +64,9 @@ namespace DeepTransit.Core
             gm.MissionManager.OnMissionArrived += (mission, payout) =>
                 UIManager.Instance?.ShowDebrief(mission, payout);
 
+            gm.MissionManager.OnMissionFailed += mission =>
+                UIManager.Instance?.ShowDebrief(mission, new PayoutResult());
+
             gm.EventManager.OnEventFired += (mission, ev) =>
                 UIManager.Instance?.ShowEvent(mission, ev);
         }

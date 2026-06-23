@@ -29,6 +29,10 @@ namespace DeepTransit.UI
         public Button NavMissionConfig;
         public Button NavContractors;
 
+        [Header("Speed")]
+        public Button SpeedButton;
+        public Text   SpeedText;
+
         void OnEnable()
         {
             var gm = GameManager.Instance;
@@ -36,6 +40,7 @@ namespace DeepTransit.UI
             gm.CurrencyManager.OnChanged += Refresh;
             Refresh();
             RefreshMissionCard();
+            RefreshSpeedLabel();
         }
 
         void OnDisable()
@@ -49,6 +54,22 @@ namespace DeepTransit.UI
             NavFleet?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Fleet));
             NavMissionConfig?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.MissionConfig));
             NavContractors?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Contractors));
+            SpeedButton?.onClick.AddListener(CycleSpeed);
+        }
+
+        void CycleSpeed()
+        {
+            var tm = GameManager.Instance?.TimeManager;
+            if (tm == null) return;
+            tm.SpeedMultiplier = tm.SpeedMultiplier switch { 1 => 2, 2 => 5, 5 => 10, _ => 1 };
+            RefreshSpeedLabel();
+        }
+
+        void RefreshSpeedLabel()
+        {
+            if (SpeedText == null) return;
+            int spd = GameManager.Instance?.TimeManager?.SpeedMultiplier ?? 1;
+            SpeedText.text = $"×{spd}";
         }
 
         void Update() => RefreshMissionCard();

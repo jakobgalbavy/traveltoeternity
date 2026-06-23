@@ -152,6 +152,8 @@ namespace DeepTransit.Editor
             var barL = bar.AddComponent<HorizontalLayoutGroup>();
             barL.childAlignment = TextAnchor.MiddleCenter;
             barL.spacing = 40; barL.padding = new RectOffset(20, 20, 0, 0);
+            barL.childControlWidth = true; barL.childControlHeight = true;
+            barL.childForceExpandWidth = false; barL.childForceExpandHeight = true;
 
             hub.SoftCurrencyText = Txt("SoftText", bar.transform, "¤ 5,000",  32, C_GREEN,  TextAnchor.MiddleCenter);
             hub.HardCurrencyText = Txt("HardText", bar.transform, "★ 0",      32, C_ACCENT, TextAnchor.MiddleCenter);
@@ -163,6 +165,7 @@ namespace DeepTransit.Editor
             var cardL = card.AddComponent<VerticalLayoutGroup>();
             cardL.childAlignment = TextAnchor.UpperLeft;
             cardL.spacing = 12; cardL.padding = new RectOffset(25, 25, 20, 20);
+            cardL.childControlWidth = true; cardL.childControlHeight = true;
             cardL.childForceExpandWidth = true; cardL.childForceExpandHeight = false;
 
             hub.MissionCardRoot = card;
@@ -178,11 +181,18 @@ namespace DeepTransit.Editor
             hub.MissionHullText   = Txt("HullText",   statRow.transform, "Hull 100%",   26, C_TEXT, TextAnchor.MiddleLeft);
             hub.MissionMoraleText = Txt("MoraleText", statRow.transform, "Morale 100%", 26, C_TEXT, TextAnchor.MiddleRight);
 
+            var speedBtn = Btn("SpeedBtn", card.transform, "×1", C_PANEL, C_ACCENT);
+            speedBtn.GetComponentInChildren<Text>().Let(t => { t.fontSize = 32; t.alignment = TextAnchor.MiddleCenter; });
+            SzEl(speedBtn.gameObject, preferredHeight: 60);
+            hub.SpeedButton = speedBtn;
+            hub.SpeedText   = speedBtn.GetComponentInChildren<Text>();
+
             // No-mission panel
             var noMis = Pnl("NoMission", root.transform, C_PANEL);
             Anchors(noMis, 0.04f, 0.24f, 0.96f, 0.90f, 0, 0, 0, 0);
             var noMisL = noMis.AddComponent<VerticalLayoutGroup>();
             noMisL.childAlignment = TextAnchor.MiddleCenter;
+            noMisL.childControlWidth = true; noMisL.childControlHeight = true;
             noMisL.childForceExpandWidth = true; noMisL.childForceExpandHeight = false;
             hub.NoMissionRoot = noMis;
             Txt("Label", noMis.transform, "No active mission",       40, C_DIM, TextAnchor.MiddleCenter);
@@ -281,6 +291,7 @@ namespace DeepTransit.Editor
             Anchors(cargo, 0, 0.20f, 1, 0.45f, 10, 5, -10, -5);
             var cargoL = cargo.AddComponent<VerticalLayoutGroup>();
             cargoL.spacing = 10; cargoL.padding = new RectOffset(20, 20, 15, 15);
+            cargoL.childControlWidth = true; cargoL.childControlHeight = true;
             cargoL.childForceExpandWidth = true; cargoL.childForceExpandHeight = false;
 
             var passRow = HRow("PassRow", cargo.transform, 10);
@@ -372,7 +383,8 @@ namespace DeepTransit.Editor
             var optPanel = Pnl("OptionsPanel", root.transform, Color.clear);
             Anchors(optPanel, 0, 0.05f, 1, 0.47f, 20, 10, -20, -10);
             var optL = optPanel.AddComponent<VerticalLayoutGroup>();
-            optL.spacing = 15; optL.childForceExpandWidth = true; optL.childForceExpandHeight = false;
+            optL.spacing = 15; optL.childControlWidth = true; optL.childControlHeight = true;
+            optL.childForceExpandWidth = true; optL.childForceExpandHeight = false;
             screen.OptionsParent      = optPanel.transform;
             screen.OptionButtonPrefab = optionBtnPrefab;
 
@@ -389,6 +401,7 @@ namespace DeepTransit.Editor
             var vl = root.AddComponent<VerticalLayoutGroup>();
             vl.childAlignment = TextAnchor.UpperCenter;
             vl.spacing = 14; vl.padding = new RectOffset(40, 40, 80, 40);
+            vl.childControlWidth = true; vl.childControlHeight = true;
             vl.childForceExpandWidth = true; vl.childForceExpandHeight = false;
 
             screen.ShipNameText    = Txt("ShipName",    root.transform, "ISV Pathfinder",      44, C_TEXT,   TextAnchor.MiddleCenter);
@@ -403,6 +416,7 @@ namespace DeepTransit.Editor
             SzEl(bd, preferredHeight: 370);
             var bdL = bd.AddComponent<VerticalLayoutGroup>();
             bdL.spacing = 8; bdL.padding = new RectOffset(25, 25, 15, 15);
+            bdL.childControlWidth = true; bdL.childControlHeight = true;
             bdL.childForceExpandWidth = true; bdL.childForceExpandHeight = false;
 
             screen.PassengerRevenueText = Txt("PassRev",  bd.transform, "Passenger revenue:  ¤0",   30, C_TEXT,   TextAnchor.MiddleLeft);
@@ -432,7 +446,8 @@ namespace DeepTransit.Editor
         {
             var go = new GameObject("ContractorRowPrefab");
             var hl = go.AddComponent<HorizontalLayoutGroup>();
-            hl.spacing = 10; hl.childForceExpandHeight = true;
+            hl.spacing = 10; hl.childControlWidth = true; hl.childControlHeight = true;
+            hl.childForceExpandWidth = false; hl.childForceExpandHeight = true;
             SzEl(go, preferredHeight: 72);
 
             Txt("NameText", go.transform, "Name — Role  Exp  Rate/day", 26, C_TEXT, TextAnchor.MiddleLeft)
@@ -446,8 +461,8 @@ namespace DeepTransit.Editor
         static GameObject MakeDestRowPrefab()
         {
             var btn = Btn("DestinationRowPrefab", null, "Destination  ×1.0  Rep 0+", C_PANEL, C_TEXT);
-            btn.GetComponentInChildren<Text>().Let(t => { t.alignment = TextAnchor.MiddleLeft; t.fontSize = 28; });
-            SzEl(btn.gameObject, preferredHeight: 72);
+            btn.GetComponentInChildren<Text>().Let(t => { t.alignment = TextAnchor.MiddleCenter; t.fontSize = 36; });
+            SzEl(btn.gameObject, preferredHeight: 80, flexibleWidth: 1);
             return SavePrefab(btn.gameObject, "DestinationRowPrefab");
         }
 
@@ -455,7 +470,8 @@ namespace DeepTransit.Editor
         {
             var go = new GameObject("ModuleRowPrefab");
             var hl = go.AddComponent<HorizontalLayoutGroup>();
-            hl.spacing = 10; hl.childForceExpandHeight = true;
+            hl.spacing = 10; hl.childControlWidth = true; hl.childControlHeight = true;
+            hl.childForceExpandWidth = false; hl.childForceExpandHeight = true;
             SzEl(go, preferredHeight: 72);
 
             Txt("ModuleText", go.transform, "Slot: Module  Tier", 26, C_TEXT, TextAnchor.MiddleLeft)
@@ -599,6 +615,7 @@ namespace DeepTransit.Editor
             cRT.anchorMin = new Vector2(0, 1); cRT.anchorMax = new Vector2(1, 1);
             cRT.pivot = new Vector2(0.5f, 1); cRT.offsetMin = cRT.offsetMax = Vector2.zero;
 
+            vl.childControlWidth = true; vl.childControlHeight = true;
             vl.childForceExpandWidth = true; vl.childForceExpandHeight = false; vl.spacing = 5;
             var csf = content.AddComponent<ContentSizeFitter>();
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -615,7 +632,8 @@ namespace DeepTransit.Editor
             var go = new GameObject(name);
             if (parent) go.transform.SetParent(parent, false);
             var hl = go.AddComponent<HorizontalLayoutGroup>();
-            hl.spacing = spacing; hl.childForceExpandHeight = true; hl.childForceExpandWidth = false;
+            hl.spacing = spacing; hl.childControlWidth = true; hl.childControlHeight = true;
+            hl.childForceExpandHeight = true; hl.childForceExpandWidth = false;
             Full(go.GetComponent<RectTransform>());
             return go;
         }
