@@ -28,6 +28,7 @@ This file tracks design decisions: **open** (needs a choice), **decided** (locke
 | D-018 | Ship naming | Player-customizable ship names | Named on commissioning; name appears in all mission logs, event reports, and comms |
 | D-019 | Agency name | Deep Transit Authority (DTA) | Player runs the DTA. Appears in all UI chrome, comms, lore. |
 | D-020 | Event card UX | Queue events + pause game time while card is open | Events that fire while player is reading a card are queued and shown one-by-one after dismiss. Time (and escalation countdown) is frozen while any event card is visible. Queue is cleared on mission end (debrief). |
+| D-021 | Launch cost formula | `fuel = voyageMinutes × 0.5` + `supply = passengers × 40` + `handling = packages × 15` | Scales 20–35% of expected payout across all three destinations. Player starts with ¤5,000; first Proxima B run (5 pax) costs ¤320 and earns ~¤1,200 net. Deducted upfront on launch; blocked in UI if insufficient funds. |
 
 ---
 

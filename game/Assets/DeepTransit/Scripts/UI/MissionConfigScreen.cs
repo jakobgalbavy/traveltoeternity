@@ -24,6 +24,7 @@ namespace DeepTransit.UI
         [Header("Summary")]
         public Text SelectedDestinationText;
         public Text EstimatedPayoutText;
+        public Text LaunchCostText;
         public Text VoyageDurationText;
 
         [Header("Actions")]
@@ -148,8 +149,20 @@ namespace DeepTransit.UI
                 return;
             }
 
+            long launchCost = Economy.PayoutCalculator.CalculateLaunchCost(_selectedDest, manifest);
+            bool canAfford  = gm.CurrencyManager.CanAfford(launchCost);
+            if (!canAfford)
+            {
+                SetStatus($"Insufficient funds. Need ¤{launchCost:N0} (have ¤{gm.CurrencyManager.SoftCurrency:N0}).", blocked: true);
+                return;
+            }
+
             SetStatus("", blocked: false);
 
+            if (LaunchCostText)
+            {
+                LaunchCostText.text = $"Launch cost: ¤{launchCost:N0}";
+            }
             if (EstimatedPayoutText)
             {
                 float est = (passengers * Economy.PayoutCalculator.BasePassengerRate
@@ -195,7 +208,15 @@ namespace DeepTransit.UI
                 PackageCount   = PackageSlider   ? Mathf.RoundToInt(PackageSlider.value)   : 0,
             };
 
-            Debug.Log($"[MissionConfig] Launching → {_selectedDest.DisplayName}  passengers={manifest.PassengerCount}  packages={manifest.PackageCount}");
+            long launchCost = Economy.PayoutCalculator.CalculateLaunchCost(_selectedDest, manifest);
+            if (!gm.CurrencyManager.Spend(launchCost))
+            {
+                Debug.LogError($"[MissionConfig] OnLaunch: can't afford launch cost ¤{launchCost}.");
+                SetStatus($"Insufficient funds (¤{launchCost:N0} required).", blocked: true);
+                return;
+            }
+
+            Debug.Log($"[MissionConfig] Launching → {_selectedDest.DisplayName}  passengers={manifest.PassengerCount}  packages={manifest.PackageCount}  cost=¤{launchCost}");
 
             var assignedIds = new List<string>();
             foreach (var c in gm.ContractorManager.Roster)

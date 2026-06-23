@@ -308,8 +308,9 @@ namespace DeepTransit.Editor
             config.PackageSlider = SliderEl("PkgSlider", pkgRow.transform);
             SzEl(config.PackageSlider.gameObject, flexibleWidth: 1, preferredHeight: 40);
 
-            config.CapacityWarningText = Txt("Warning",   cargo.transform, "", 26, C_WARN,  TextAnchor.MiddleCenter);
-            config.EstimatedPayoutText = Txt("EstPayout", cargo.transform, "Est. payout: ¤0", 28, C_GREEN, TextAnchor.MiddleCenter);
+            config.CapacityWarningText = Txt("Warning",    cargo.transform, "", 26, C_WARN,  TextAnchor.MiddleCenter);
+            config.LaunchCostText      = Txt("LaunchCost", cargo.transform, "", 26, C_DIM,   TextAnchor.MiddleCenter);
+            config.EstimatedPayoutText = Txt("EstPayout",  cargo.transform, "Est. payout: ¤0", 28, C_GREEN, TextAnchor.MiddleCenter);
 
             config.LaunchButton = Btn("LaunchBtn", root.transform, "LAUNCH MISSION", C_ACCENT, Color.white);
             Anchors(config.LaunchButton.gameObject, 0.10f, 0.05f, 0.90f, 0.18f, 0, 0, 0, 0);

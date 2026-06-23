@@ -35,7 +35,7 @@ This is the master index for all design documentation. Every significant decisio
 | Core loop | DRAFT | Update for god-view UX |
 | Event system | DONE | Event queue + time-pause UX implemented (see D-020) |
 | Crew system | DRAFT | Decide O-005 (individuals vs pool) |
-| Economy | DRAFT | Validate payout formula with numbers |
+| Economy | DONE | Launch costs implemented (D-021); payout formula live; debrief shows real breakdown |
 | Game name | DECIDED (Deep Transit) | — |
 | Agency identity | DECIDED (Deep Transit Authority / DTA) | — |
 | Cargo system | DRAFT | Validate mixed manifest complexity vs. player cognitive load |

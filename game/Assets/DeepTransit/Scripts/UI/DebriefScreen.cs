@@ -36,8 +36,9 @@ namespace DeepTransit.UI
         public void Populate(Mission mission, PayoutResult payout)
         {
             bool success = mission.Status == MissionStatus.Arrived;
+            var dest = Core.GameManager.Instance?.StarMapManager?.GetById(mission.DestinationId);
             if (ShipNameText)    ShipNameText.text    = mission.ShipName;
-            if (DestinationText) DestinationText.text = mission.DestinationId;
+            if (DestinationText) DestinationText.text = dest != null ? dest.DisplayName : mission.DestinationId;
             if (OutcomeText)
             {
                 OutcomeText.text  = success ? "MISSION COMPLETE" : "MISSION FAILED";
