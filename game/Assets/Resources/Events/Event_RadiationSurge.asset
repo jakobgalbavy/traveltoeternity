@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6095d0d909ea04dbda0d82d6d58fe81a, type: 3}
+  m_Name: Event_RadiationSurge
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Events.GameEventSO
+  Id: Event_RadiationSurge
+  Title: Solar Radiation Surge
+  Description: An unexpected solar flare is flooding the ship with hard radiation.
+    Crew exposure is rising and sensitive cargo is at risk.
+  Severity: 1
+  ChancePerHour: 0.06
+  Precondition: 0
+  Options:
+  - Label: Deploy Shielding
+    RequiredRole: 8
+    BaseSuccessChance: 0.65
+    ContractorBonus: 0.3
+    IsPartialFix: 0
+    OnSuccess:
+      HullDamage: 0
+      MoraleDelta: 0.02
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Radiation baffles deployed. Exposure controlled.
+    OnFailure:
+      HullDamage: 0
+      MoraleDelta: -0.1
+      CargoDamage: -0.05
+      FoodDelta: 0
+      LogMessage: Shielding deployment failed. Exposure spreading.
+  - Label: Crew Shelter Protocol
+    RequiredRole: 3
+    BaseSuccessChance: 0.75
+    ContractorBonus: 0.2
+    IsPartialFix: 0
+    OnSuccess:
+      HullDamage: 0
+      MoraleDelta: -0.05
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Crew sheltered. Radiation exposure minimal.
+    OnFailure:
+      HullDamage: -0.05
+      MoraleDelta: -0.15
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Shelter protocol too slow. Crew exposed.
+  Escalation: {fileID: 0}
+  EscalationMinutes: 60

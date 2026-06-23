@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6095d0d909ea04dbda0d82d6d58fe81a, type: 3}
+  m_Name: Event_HazardousCargo
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Events.GameEventSO
+  Id: Event_HazardousCargo
+  Title: Hazardous Cargo Leak
+  Description: Atmospheric sensors detect contamination from improperly stored freight.
+    Crew health and hull integrity are at risk from exposure.
+  Severity: 1
+  ChancePerHour: 0.06
+  Precondition: 2
+  Options:
+  - Label: Containment Protocol
+    RequiredRole: 8
+    BaseSuccessChance: 0.65
+    ContractorBonus: 0.35
+    IsPartialFix: 0
+    OnSuccess:
+      HullDamage: 0
+      MoraleDelta: 0.02
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Leak contained. Atmosphere scrubbed.
+    OnFailure:
+      HullDamage: -0.05
+      MoraleDelta: -0.12
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Containment failed. Corrosive spread to hull.
+  - Label: Jettison Affected Cargo
+    RequiredRole: 6
+    BaseSuccessChance: 0.82
+    ContractorBonus: 0.18
+    IsPartialFix: 0
+    OnSuccess:
+      HullDamage: 0
+      MoraleDelta: 0
+      CargoDamage: -0.08
+      FoodDelta: 0
+      LogMessage: Affected cargo jettisoned. Crew safe.
+    OnFailure:
+      HullDamage: -0.03
+      MoraleDelta: -0.08
+      CargoDamage: -0.18
+      FoodDelta: 0
+      LogMessage: Jettison malfunction. Leak spread.
+  Escalation: {fileID: 0}
+  EscalationMinutes: 75

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6095d0d909ea04dbda0d82d6d58fe81a, type: 3}
+  m_Name: Event_CargoShift
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Events.GameEventSO
+  Id: Event_CargoShift
+  Title: Cargo Shift
+  Description: Unsecured cargo has shifted during a correction burn. Potential damage
+    to freight.
+  Severity: 0
+  ChancePerHour: 0.07
+  Precondition: 2
+  Options:
+  - Label: Secure Cargo
+    RequiredRole: 6
+    BaseSuccessChance: 0.75
+    ContractorBonus: 0.2
+    IsPartialFix: 0
+    OnSuccess:
+      HullDamage: 0
+      MoraleDelta: 0
+      CargoDamage: -0.02
+      FoodDelta: 0
+      LogMessage: Cargo re-secured. Minimal loss.
+    OnFailure:
+      HullDamage: 0
+      MoraleDelta: -0.05
+      CargoDamage: -0.15
+      FoodDelta: 0
+      LogMessage: Securing failed. Significant cargo damaged.
+  Escalation: {fileID: 0}
+  EscalationMinutes: 120

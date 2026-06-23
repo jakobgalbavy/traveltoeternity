@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6095d0d909ea04dbda0d82d6d58fe81a, type: 3}
+  m_Name: Event_CropBlight
+  m_EditorClassIdentifier: DeepTransit.Runtime::DeepTransit.Events.GameEventSO
+  Id: Event_CropBlight
+  Title: Crop Blight
+  Description: A fungal infection has spread through the grow bay. The crew is too
+    impaired to tend it.
+  Severity: 1
+  ChancePerHour: 0.06
+  Precondition: 0
+  Options:
+  - Label: Treat Infection
+    RequiredRole: 2
+    BaseSuccessChance: 0.6
+    ContractorBonus: 0.3
+    IsPartialFix: 0
+    OnSuccess:
+      HullDamage: 0
+      MoraleDelta: 0.05
+      CargoDamage: 0
+      FoodDelta: 0
+      LogMessage: Blight contained. Crops recovering.
+    OnFailure:
+      HullDamage: 0
+      MoraleDelta: -0.15
+      CargoDamage: 0
+      FoodDelta: -0.2
+      LogMessage: Blight spread. Significant crop loss.
+  - Label: Emergency Harvest
+    RequiredRole: 0
+    BaseSuccessChance: 0.8
+    ContractorBonus: 0.1
+    IsPartialFix: 0
+    OnSuccess:
+      HullDamage: 0
+      MoraleDelta: 0
+      CargoDamage: 0
+      FoodDelta: -0.05
+      LogMessage: Early harvest completed. Some loss.
+    OnFailure:
+      HullDamage: 0
+      MoraleDelta: -0.05
+      CargoDamage: 0
+      FoodDelta: -0.15
+      LogMessage: Early harvest botched. Heavy spoilage.
+  Escalation: {fileID: 0}
+  EscalationMinutes: 180
