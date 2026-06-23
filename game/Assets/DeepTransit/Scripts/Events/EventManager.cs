@@ -18,6 +18,7 @@ namespace DeepTransit.Events
         void Awake()
         {
             AllEvents = Resources.LoadAll<GameEventSO>("Events");
+            Debug.Log($"[EventManager] Loaded {AllEvents?.Length ?? 0} events from Resources/Events.");
         }
 
         // Called every game-hour by MissionManager.

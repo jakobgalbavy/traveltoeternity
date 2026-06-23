@@ -34,8 +34,7 @@ namespace DeepTransit.Core
         {
             MissionManager.SetEventManager(EventManager);
             bool loaded = SaveManager.Load();
-            // Guarantee the starter destination is always available, even in saves
-            // that predate the unlock system or were written before first-launch ran.
+            Debug.Log($"[GameManager] Save loaded={loaded}  ships={ShipManager.Ships.Count}  missions={MissionManager.ActiveMissions.Count}");
             StarMapManager.UnlockDestination("proxima-b");
             if (!loaded)
                 OnFirstLaunch();

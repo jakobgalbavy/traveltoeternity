@@ -72,12 +72,22 @@ namespace DeepTransit.Core
         void CreateStarterShipIfNeeded()
         {
             var gm = GameManager.Instance;
-            if (gm == null || gm.ShipManager.Ships.Count > 0) return;
-            if (StarterBlueprint == null) return;
+            if (gm == null || gm.ShipManager.Ships.Count > 0)
+            {
+                Debug.Log($"[Bootstrap] Ships already present ({gm?.ShipManager?.Ships?.Count ?? 0}) — skipping starter ship creation.");
+                return;
+            }
+            if (StarterBlueprint == null)
+            {
+                Debug.LogError("[Bootstrap] StarterBlueprint is null — assign it in the Bootstrap component inspector.");
+                return;
+            }
 
             var ship = gm.ShipManager.CreateShip("ISV Pathfinder", StarterBlueprint);
+            int installed = 0;
             for (int i = 0; i < StarterModules?.Length; i++)
-                ship.InstallModule(i, StarterModules[i]);
+                if (ship.InstallModule(i, StarterModules[i])) installed++;
+            Debug.Log($"[Bootstrap] Created '{ship.Name}' with {installed}/{StarterModules?.Length ?? 0} modules installed.");
         }
     }
 }

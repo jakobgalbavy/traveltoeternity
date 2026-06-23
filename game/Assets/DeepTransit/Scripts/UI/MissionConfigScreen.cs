@@ -34,7 +34,6 @@ namespace DeepTransit.UI
 
         void Start()
         {
-
             BackButton?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Hub));
             LaunchButton?.onClick.AddListener(OnLaunch);
             PassengerSlider?.onValueChanged.AddListener(_ => OnCargoChanged());
@@ -50,34 +49,46 @@ namespace DeepTransit.UI
 
         void SetSliderMaxes()
         {
-            var ship = GameManager.Instance?.ShipManager?.Ships?.Count > 0
-                ? GameManager.Instance.ShipManager.Ships[0] : null;
-            if (ship == null) return;
-            if (PassengerSlider)
+            var gm   = GameManager.Instance;
+            var ship = gm?.ShipManager?.Ships?.Count > 0 ? gm.ShipManager.Ships[0] : null;
+            if (ship == null)
             {
-                PassengerSlider.minValue = 0;
-                PassengerSlider.maxValue = Mathf.Max(1, ship.GetStat(ShipStat.PassengerCapacity));
+                Debug.LogError("[MissionConfig] SetSliderMaxes: no ship found — Bootstrap may be missing its StarterBlueprint assignment.");
+                return;
             }
-            if (PackageSlider)
-            {
-                PackageSlider.minValue = 0;
-                PackageSlider.maxValue = Mathf.Max(1, ship.GetStat(ShipStat.CargoCapacity));
-            }
+
+            float passCap  = ship.GetStat(ShipStat.PassengerCapacity);
+            float cargoCap = ship.GetStat(ShipStat.CargoCapacity);
+            Debug.Log($"[MissionConfig] Ship '{ship.Name}' — PassCap={passCap:F0}  CargoCap={cargoCap:F0}  OnMission={ship.IsOnMission}");
+
+            if (PassengerSlider) { PassengerSlider.minValue = 0; PassengerSlider.maxValue = Mathf.Max(1, passCap); }
+            if (PackageSlider)   { PackageSlider.minValue   = 0; PackageSlider.maxValue   = Mathf.Max(1, cargoCap); }
         }
 
         void PopulateDestinations()
         {
-            if (DestinationListParent == null) return;
+            if (DestinationListParent == null)
+            {
+                Debug.LogError("[MissionConfig] DestinationListParent is null — run Build Scene.");
+                return;
+            }
             foreach (Transform child in DestinationListParent) Destroy(child.gameObject);
 
             var gm = GameManager.Instance;
-            if (gm == null) return;
-            var available = gm.StarMapManager.GetAvailable(gm.CurrencyManager.Reputation);
+            if (gm == null) { Debug.LogError("[MissionConfig] GameManager not found."); return; }
+
+            float rep       = gm.CurrencyManager.Reputation;
+            var   available = gm.StarMapManager.GetAvailable(rep);
+            Debug.Log($"[MissionConfig] Destinations available: {available.Count}  (reputation={rep:F1})");
 
             foreach (var dest in available)
             {
-                if (DestinationRowPrefab == null) continue;
-                var row = Instantiate(DestinationRowPrefab, DestinationListParent);
+                if (DestinationRowPrefab == null)
+                {
+                    Debug.LogError("[MissionConfig] DestinationRowPrefab is null — run Build Scene.");
+                    break;
+                }
+                var row   = Instantiate(DestinationRowPrefab, DestinationListParent);
                 var texts = row.GetComponentsInChildren<Text>();
                 if (texts.Length > 0) texts[0].text = $"{dest.DisplayName}  ×{dest.PayoutMultiplier:F1}  Rep {dest.ReputationRequired}+";
 
@@ -89,8 +100,8 @@ namespace DeepTransit.UI
         void SelectDestination(DestinationSO dest)
         {
             _selectedDest = dest;
-            if (SelectedDestinationText)
-                SelectedDestinationText.text = $"→ {dest.DisplayName}";
+            Debug.Log($"[MissionConfig] Selected: {dest.DisplayName}");
+            if (SelectedDestinationText) SelectedDestinationText.text = $"→ {dest.DisplayName}";
             if (VoyageDurationText)
             {
                 float hours = dest.VoyageMinutes / 60f;
@@ -103,9 +114,19 @@ namespace DeepTransit.UI
 
         void OnCargoChanged()
         {
-            var gm = GameManager.Instance;
+            var gm   = GameManager.Instance;
             var ship = gm?.ShipManager?.Ships?.Count > 0 ? gm.ShipManager.Ships[0] : null;
-            if (ship == null) return;
+
+            if (ship == null)
+            {
+                SetStatus("No ship registered. Run Build Scene and Generate Starter Data.", blocked: true);
+                return;
+            }
+            if (ship.IsOnMission)
+            {
+                SetStatus("Ship is on an active mission.", blocked: true);
+                return;
+            }
 
             int passengers = PassengerSlider ? Mathf.RoundToInt(PassengerSlider.value) : 0;
             int packages   = PackageSlider   ? Mathf.RoundToInt(PackageSlider.value)   : 0;
@@ -113,32 +134,68 @@ namespace DeepTransit.UI
             if (PassengerCountText) PassengerCountText.text = $"Passengers: {passengers}";
             if (PackageCountText)   PackageCountText.text   = $"Packages: {packages}";
 
-            var manifest = new CargoManifest { PassengerCount = passengers, PackageCount = packages };
-            bool valid = manifest.Validate(ship, out string error);
-            if (CapacityWarningText) CapacityWarningText.text = valid ? "" : error;
-            if (LaunchButton) LaunchButton.interactable = valid && _selectedDest != null;
+            var  manifest = new CargoManifest { PassengerCount = passengers, PackageCount = packages };
+            bool valid    = manifest.Validate(ship, out string error);
+            if (!valid)
+            {
+                SetStatus(error, blocked: true);
+                return;
+            }
 
-            if (_selectedDest != null && EstimatedPayoutText)
+            if (_selectedDest == null)
+            {
+                SetStatus("Select a destination to continue.", blocked: true);
+                return;
+            }
+
+            SetStatus("", blocked: false);
+
+            if (EstimatedPayoutText)
             {
                 float est = (passengers * Economy.PayoutCalculator.BasePassengerRate
-                           + packages  * Economy.PayoutCalculator.BasePackageRate)
+                           + packages   * Economy.PayoutCalculator.BasePackageRate)
                            * _selectedDest.PayoutMultiplier;
                 EstimatedPayoutText.text = $"Est. payout: ¤{est:N0}";
             }
         }
 
+        void SetStatus(string message, bool blocked)
+        {
+            if (CapacityWarningText) CapacityWarningText.text = message;
+            if (LaunchButton) LaunchButton.interactable = !blocked;
+        }
+
         void OnLaunch()
         {
-            if (_selectedDest == null) return;
-            var gm = GameManager.Instance;
+            var gm   = GameManager.Instance;
             var ship = gm?.ShipManager?.Ships?.Count > 0 ? gm.ShipManager.Ships[0] : null;
-            if (ship == null || ship.IsOnMission) return;
+
+            if (_selectedDest == null)
+            {
+                Debug.LogWarning("[MissionConfig] OnLaunch: no destination selected.");
+                SetStatus("Select a destination to continue.", blocked: true);
+                return;
+            }
+            if (ship == null)
+            {
+                Debug.LogError("[MissionConfig] OnLaunch: no ship found.");
+                SetStatus("No ship registered.", blocked: true);
+                return;
+            }
+            if (ship.IsOnMission)
+            {
+                Debug.LogWarning("[MissionConfig] OnLaunch: ship is already on a mission.");
+                SetStatus("Ship is on an active mission.", blocked: true);
+                return;
+            }
 
             var manifest = new CargoManifest
             {
                 PassengerCount = PassengerSlider ? Mathf.RoundToInt(PassengerSlider.value) : 0,
                 PackageCount   = PackageSlider   ? Mathf.RoundToInt(PackageSlider.value)   : 0,
             };
+
+            Debug.Log($"[MissionConfig] Launching → {_selectedDest.DisplayName}  passengers={manifest.PassengerCount}  packages={manifest.PackageCount}");
 
             var assignedIds = new List<string>();
             foreach (var c in gm.ContractorManager.Roster)
