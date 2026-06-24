@@ -29,13 +29,13 @@ namespace DeepTransit.Economy
         public static long CalculateLaunchCost(DestinationSO destination, CargoManifest cargo, bool deferCrewPay = false)
         {
             if (destination == null) return 0;
-            long fuel = FuelCost(destination);
-            return deferCrewPay ? fuel : fuel + DeferrableCost(cargo);
+            if (deferCrewPay) return 0;
+            return FuelCost(destination) + DeferrableCost(cargo);
         }
 
-        // Deferred crew cost settled at mission end (with 30% penalty).
-        public static long DeferredSettlement(CargoManifest cargo) =>
-            Mathf.RoundToInt(DeferrableCost(cargo) * DeferredPayPenalty);
+        // Full launch cost settled at mission end with 30% penalty when deferred.
+        public static long DeferredSettlement(DestinationSO destination, CargoManifest cargo) =>
+            Mathf.RoundToInt((FuelCost(destination) + DeferrableCost(cargo)) * DeferredPayPenalty);
 
         public static PayoutResult Calculate(Mission mission, DestinationSO destination)
         {
@@ -61,7 +61,7 @@ namespace DeepTransit.Economy
             long deferredDeduction = 0;
             if (mission.DeferredCrewPay)
             {
-                deferredDeduction = DeferredSettlement(mission.Cargo);
+                deferredDeduction = DeferredSettlement(destination, mission.Cargo);
                 gross = System.Math.Max(0L, gross - deferredDeduction);
             }
 

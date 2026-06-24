@@ -315,7 +315,7 @@ namespace DeepTransit.Editor
             config.LaunchCostText      = Txt("LaunchCost", cargo.transform, "", 26, C_DIM,   TextAnchor.MiddleCenter);
             config.EstimatedPayoutText = Txt("EstPayout",  cargo.transform, "Est. payout: ¤0", 28, C_GREEN, TextAnchor.MiddleCenter);
 
-            var deferBtn = Btn("DeferPayBtn", cargo.transform, "Defer crew pay (+30% penalty)", C_PANEL, C_DIM);
+            var deferBtn = Btn("DeferPayBtn", cargo.transform, "Defer all costs (+30% penalty)", C_PANEL, C_DIM);
             deferBtn.GetComponentInChildren<Text>().Let(t => { t.fontSize = 26; t.alignment = TextAnchor.MiddleCenter; });
             SzEl(deferBtn.gameObject, preferredHeight: 52);
             config.DeferPayButton = deferBtn;

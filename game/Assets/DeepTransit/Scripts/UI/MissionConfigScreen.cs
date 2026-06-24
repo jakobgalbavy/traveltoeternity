@@ -172,9 +172,8 @@ namespace DeepTransit.UI
 
             if (!canAfford)
             {
-                bool couldAffordWithDefer = gm.CurrencyManager.CanAfford(deferCost);
-                string hint = !_deferCrewPay && couldAffordWithDefer
-                    ? " Enable deferred crew pay to launch with fuel-only cost."
+                string hint = !_deferCrewPay
+                    ? " Enable deferred pay to launch with no upfront cost."
                     : "";
                 SetStatus($"Insufficient funds. Need ¤{activeCost:N0} (have ¤{gm.CurrencyManager.SoftCurrency:N0}).{hint}", blocked: true);
                 return;
@@ -185,7 +184,7 @@ namespace DeepTransit.UI
             if (LaunchCostText)
             {
                 LaunchCostText.text = _deferCrewPay
-                    ? $"Launch cost: ¤{deferCost:N0} (fuel only — crew deducted at arrival)"
+                    ? "Launch cost: ¤0 (all costs deferred — settled at arrival)"
                     : $"Launch cost: ¤{fullCost:N0}";
             }
 
@@ -196,8 +195,8 @@ namespace DeepTransit.UI
                                * _selectedDest.PayoutMultiplier;
                 if (_deferCrewPay)
                 {
-                    long settlement = Economy.PayoutCalculator.DeferredSettlement(manifest);
-                    EstimatedPayoutText.text = $"Est. payout: ¤{Mathf.Max(0f, grossEst - settlement):N0}  (−¤{settlement:N0} crew)";
+                    long settlement = Economy.PayoutCalculator.DeferredSettlement(_selectedDest, manifest);
+                    EstimatedPayoutText.text = $"Est. payout: ¤{Mathf.Max(0f, grossEst - settlement):N0}  (−¤{settlement:N0} deferred)";
                 }
                 else
                 {
@@ -211,14 +210,14 @@ namespace DeepTransit.UI
             if (DeferPayText == null) return;
             if (_deferCrewPay)
             {
-                DeferPayText.text  = "✓ Crew pay deferred (+30%)";
+                DeferPayText.text  = "✓ All costs deferred (+30% penalty)";
                 DeferPayText.color = new Color(1f, 0.75f, 0.2f);
             }
             else
             {
                 DeferPayText.text  = canAfford
-                    ? "Defer crew pay (+30% penalty)"
-                    : "⚠ Defer crew pay to afford launch";
+                    ? "Defer all costs (+30% penalty)"
+                    : "⚠ Defer all costs to afford launch";
                 DeferPayText.color = canAfford
                     ? new Color(0.6f, 0.6f, 0.6f)
                     : new Color(1f, 0.75f, 0.2f);
