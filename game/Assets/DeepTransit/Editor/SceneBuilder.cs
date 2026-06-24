@@ -16,13 +16,14 @@ namespace DeepTransit.Editor
     public static class SceneBuilder
     {
         // ── Palette ──────────────────────────────────────────────────────────
-        static readonly Color C_BG     = new Color(0.08f, 0.10f, 0.13f);
-        static readonly Color C_PANEL  = new Color(0.13f, 0.16f, 0.21f);
-        static readonly Color C_ACCENT = new Color(0.22f, 0.60f, 0.95f);
-        static readonly Color C_TEXT   = new Color(0.88f, 0.90f, 0.94f);
-        static readonly Color C_DIM    = new Color(0.50f, 0.55f, 0.62f);
-        static readonly Color C_WARN   = new Color(0.95f, 0.30f, 0.30f);
-        static readonly Color C_GREEN  = new Color(0.30f, 0.85f, 0.45f);
+        static readonly Color C_BG     = new Color(0.047f, 0.055f, 0.090f);   // deep-space black-blue
+        static readonly Color C_PANEL  = new Color(0.090f, 0.110f, 0.180f);   // dark navy
+        static readonly Color C_ACCENT = new Color(0.100f, 0.720f, 0.960f);   // electric cyan
+        static readonly Color C_TEXT   = new Color(0.920f, 0.940f, 0.970f);   // cool near-white
+        static readonly Color C_DIM    = new Color(0.420f, 0.470f, 0.580f);   // cool mid-grey
+        static readonly Color C_WARN   = new Color(0.980f, 0.280f, 0.220f);   // hot red-orange
+        static readonly Color C_GREEN  = new Color(0.220f, 0.880f, 0.420f);   // bioluminescent green
+        static readonly Color C_AMBER  = new Color(0.970f, 0.630f, 0.120f);   // amber / moderate warning
 
         const string ScenePath  = "Assets/DeepTransit/Scenes/Bootstrap.unity";
         const string PrefabRoot = "Assets/DeepTransit/Prefabs/UI";
@@ -144,6 +145,13 @@ namespace DeepTransit.Editor
             var root = Pnl("Hub", parent, C_BG);
             var hub  = root.AddComponent<HubScreen>();
 
+            // Starfield — first child so it renders behind all other UI
+            var starLayer = new GameObject("StarfieldLayer");
+            starLayer.transform.SetParent(root.transform, false);
+            starLayer.AddComponent<StarfieldBackground>(); // [RequireComponent] auto-creates RectTransform
+            Full(starLayer.GetComponent<RectTransform>());
+            starLayer.transform.SetAsFirstSibling();
+
             // Top currency bar
             var bar = Pnl("CurrencyBar", root.transform, C_PANEL);
             Anchors(bar, 0, 0.92f, 1, 1, 10, 5, -10, -5);
@@ -171,6 +179,7 @@ namespace DeepTransit.Editor
             hub.MissionShipNameText    = Txt("ShipName",    card.transform, "ISV Pathfinder",        44, C_TEXT,   TextAnchor.MiddleLeft);
             hub.MissionDestinationText = Txt("Destination", card.transform, "→ Proxima Centauri b",  30, C_DIM,    TextAnchor.MiddleLeft);
             hub.MissionProgressSlider  = SliderEl("Progress", card.transform);
+            hub.MissionProgressSlider.gameObject.AddComponent<SliderPulse>();
             SzEl(hub.MissionProgressSlider.gameObject, preferredHeight: 36);
             hub.MissionStatusText      = Txt("Status",      card.transform, "0%",                    28, C_ACCENT, TextAnchor.MiddleCenter);
 
@@ -365,8 +374,9 @@ namespace DeepTransit.Editor
 
         static void BuildEventCard(Transform parent, GameObject optionBtnPrefab)
         {
-            var root   = Pnl("EventCard", parent, new Color(0.03f, 0.04f, 0.07f, 0.97f));
+            var root   = Pnl("EventCard", parent, new Color(0.047f, 0.055f, 0.090f, 0.97f));
             var screen = root.AddComponent<EventCardScreen>();
+            screen.BackgroundPanel = root.GetComponent<Image>();
 
             screen.SeverityText    = Txt("Severity",    root.transform, "CRITICAL",             42, C_WARN,  TextAnchor.UpperCenter);
             screen.TitleText       = Txt("Title",       root.transform, "Event Title",           52, C_TEXT,  TextAnchor.UpperCenter);

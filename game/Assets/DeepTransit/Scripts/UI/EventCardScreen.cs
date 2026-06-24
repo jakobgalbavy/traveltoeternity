@@ -28,6 +28,17 @@ namespace DeepTransit.UI
         [Header("Urgency")]
         public Text CountdownText;
 
+        [Header("Visual")]
+        public Image BackgroundPanel;
+
+        static readonly Color TintMinor    = new Color(0.03f, 0.04f, 0.09f, 0.97f);
+        static readonly Color TintModerate = new Color(0.13f, 0.07f, 0.01f, 0.97f);
+        static readonly Color TintCritical = new Color(0.15f, 0.02f, 0.02f, 0.97f);
+
+        static readonly Color ColMinor    = new Color(0.42f, 0.47f, 0.58f);
+        static readonly Color ColModerate = new Color(0.97f, 0.63f, 0.12f);
+        static readonly Color ColCritical = new Color(0.98f, 0.28f, 0.22f);
+
         Mission      _mission;
         MissionEvent _event;
 
@@ -68,7 +79,28 @@ namespace DeepTransit.UI
             if (CargoText)  CargoText.text  = $"Cargo {mission.CargoIntegrity * 100f:F0}%";
             if (FoodText)   FoodText.text   = $"Food {mission.FoodSupply * 100f:F0}%";
 
+            ApplySeverityTint(ev.Definition.Severity);
             BuildOptions();
+        }
+
+        void ApplySeverityTint(EventSeverity severity)
+        {
+            if (BackgroundPanel != null)
+                BackgroundPanel.color = severity switch
+                {
+                    EventSeverity.Minor    => TintMinor,
+                    EventSeverity.Moderate => TintModerate,
+                    EventSeverity.Critical => TintCritical,
+                    _                      => TintMinor,
+                };
+            if (SeverityText != null)
+                SeverityText.color = severity switch
+                {
+                    EventSeverity.Minor    => ColMinor,
+                    EventSeverity.Moderate => ColModerate,
+                    EventSeverity.Critical => ColCritical,
+                    _                      => ColMinor,
+                };
         }
 
         string BuildDescription(MissionEvent ev)
