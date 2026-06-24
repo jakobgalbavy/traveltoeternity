@@ -198,6 +198,85 @@ namespace DeepTransit.Tests
             Assert.Greater(longResult.ReputationGain, shortResult.ReputationGain);
         }
 
+        // ── Deferred crew pay ─────────────────────────────────────────────────
+
+        [Test]
+        public void DeferredPay_LaunchCost_OnlyFuel()
+        {
+            var dest  = MakeDest(multiplier: 1.2f, voyageMinutes: 240);
+            var cargo = new CargoManifest { PassengerCount = 5 };
+
+            long full     = PayoutCalculator.CalculateLaunchCost(dest, cargo, deferCrewPay: false);
+            long deferred = PayoutCalculator.CalculateLaunchCost(dest, cargo, deferCrewPay: true);
+
+            Assert.AreEqual(PayoutCalculator.FuelCost(dest), deferred);
+            Assert.Greater(full, deferred);
+        }
+
+        [Test]
+        public void DeferredPay_Settlement_Is30PctMore_ThanDeferrableCost()
+        {
+            var cargo      = new CargoManifest { PassengerCount = 5 };
+            long deferrable = PayoutCalculator.DeferrableCost(cargo);
+            long settlement = PayoutCalculator.DeferredSettlement(cargo);
+
+            Assert.AreEqual(Mathf.RoundToInt(deferrable * PayoutCalculator.DeferredPayPenalty), (int)settlement);
+        }
+
+        [Test]
+        public void DeferredPay_DeductedFromGrossPayout()
+        {
+            var dest    = MakeDest(multiplier: 1.0f, voyageMinutes: 240);
+            var cargo   = new CargoManifest { PassengerCount = 5 };
+            long settlement = PayoutCalculator.DeferredSettlement(cargo);
+
+            var normalMission   = MakeMission(5, 0);
+            var deferredMission = MakeMission(5, 0);
+            deferredMission.DeferredCrewPay = true;
+
+            var normal   = PayoutCalculator.Calculate(normalMission,   dest);
+            var deferred = PayoutCalculator.Calculate(deferredMission, dest);
+
+            Assert.AreEqual(settlement, deferred.DeferredPayDeduction);
+            Assert.AreEqual(normal.GrossPayout - settlement, deferred.GrossPayout);
+        }
+
+        [Test]
+        public void DeferredPay_NoCargo_ZeroSettlement()
+        {
+            var cargo      = new CargoManifest();
+            long settlement = PayoutCalculator.DeferredSettlement(cargo);
+            Assert.AreEqual(0L, settlement);
+        }
+
+        [Test]
+        public void DeferredPay_NormalMission_ZeroDeduction()
+        {
+            var dest    = MakeDest(multiplier: 1.0f, voyageMinutes: 240);
+            var mission = MakeMission(5, 0); // DeferredCrewPay = false by default
+            var result  = PayoutCalculator.Calculate(mission, dest);
+            Assert.AreEqual(0L, result.DeferredPayDeduction);
+        }
+
+        [Test]
+        public void DeferredPay_TotalCostIsMoreExpensive_ThanPayingUpfront()
+        {
+            // Paying upfront: full launch cost, full payout.
+            // Deferring: fuel-only cost, payout reduced by settlement (130% of deferrable).
+            // Net cost of deferring = deferrable × 1.3; net cost of upfront = deferrable × 1.0.
+            var dest  = MakeDest(multiplier: 1.2f, voyageMinutes: 240);
+            var cargo = new CargoManifest { PassengerCount = 5 };
+
+            long upfrontCost    = PayoutCalculator.CalculateLaunchCost(dest, cargo, false);
+            long deferredCost   = PayoutCalculator.CalculateLaunchCost(dest, cargo, true);
+            long settlement     = PayoutCalculator.DeferredSettlement(cargo);
+
+            long totalUpfront  = upfrontCost;
+            long totalDeferred = deferredCost + settlement;
+
+            Assert.Greater(totalDeferred, totalUpfront, "Deferring pay should cost more overall than paying upfront.");
+        }
+
         // ── Profitability sanity checks ───────────────────────────────────────
 
         [Test]

@@ -27,6 +27,9 @@ namespace DeepTransit.Missions
         // Contractors assigned (instance IDs)
         public List<string> AssignedContractorIds = new();
 
+        // Crew agreed to defer pay; settlement deducted from payout at mission end.
+        public bool DeferredCrewPay;
+
         // Live state (0–1 normalised)
         public float HullIntegrity   = 1f;
         public float CrewMorale      = 1f;

@@ -230,6 +230,9 @@ namespace DeepTransit.Editor
             Anchors(backBtn.gameObject, 0, 0.93f, 0.28f, 1, 10, 5, -10, -5);
             fleet.BackButton = backBtn;
 
+            fleet.BalanceText = Txt("Balance", root.transform, "¤ 5,000", 32, C_GREEN, TextAnchor.MiddleRight);
+            Anchors(fleet.BalanceText.gameObject, 0.55f, 0.93f, 1, 1, 0, 5, -20, -5);
+
             var nameRow = HRow("NameRow", root.transform, 10);
             Anchors(nameRow, 0, 0.83f, 1, 0.93f, 20, 5, -20, -5);
             fleet.ShipNameText  = Txt("ShipName",  nameRow.transform, "ISV Pathfinder",  44, C_TEXT,   TextAnchor.MiddleLeft);
@@ -311,6 +314,12 @@ namespace DeepTransit.Editor
             config.CapacityWarningText = Txt("Warning",    cargo.transform, "", 26, C_WARN,  TextAnchor.MiddleCenter);
             config.LaunchCostText      = Txt("LaunchCost", cargo.transform, "", 26, C_DIM,   TextAnchor.MiddleCenter);
             config.EstimatedPayoutText = Txt("EstPayout",  cargo.transform, "Est. payout: ¤0", 28, C_GREEN, TextAnchor.MiddleCenter);
+
+            var deferBtn = Btn("DeferPayBtn", cargo.transform, "Defer crew pay (+30% penalty)", C_PANEL, C_DIM);
+            deferBtn.GetComponentInChildren<Text>().Let(t => { t.fontSize = 26; t.alignment = TextAnchor.MiddleCenter; });
+            SzEl(deferBtn.gameObject, preferredHeight: 52);
+            config.DeferPayButton = deferBtn;
+            config.DeferPayText   = deferBtn.GetComponentInChildren<Text>();
 
             config.LaunchButton = Btn("LaunchBtn", root.transform, "LAUNCH MISSION", C_ACCENT, Color.white);
             Anchors(config.LaunchButton.gameObject, 0.10f, 0.05f, 0.90f, 0.18f, 0, 0, 0, 0);
@@ -420,9 +429,10 @@ namespace DeepTransit.Editor
 
             screen.PassengerRevenueText = Txt("PassRev",  bd.transform, "Passenger revenue:  ¤0",   30, C_TEXT,   TextAnchor.MiddleLeft);
             screen.PackageRevenueText   = Txt("PkgRev",   bd.transform, "Package revenue:    ¤0",   30, C_TEXT,   TextAnchor.MiddleLeft);
-            screen.HullPenaltyText      = Txt("HullPen",  bd.transform, "Hull penalty:       -0%",  28, C_WARN,   TextAnchor.MiddleLeft);
-            screen.MoraleFactorText     = Txt("Morale",   bd.transform, "Morale factor:      ×1.00",28, C_DIM,    TextAnchor.MiddleLeft);
-            screen.TotalPayoutText      = Txt("Total",    bd.transform, "TOTAL:  ¤0",               42, C_GREEN,  TextAnchor.MiddleLeft);
+            screen.HullPenaltyText      = Txt("HullPen",     bd.transform, "Hull penalty:       -0%",      28, C_WARN,   TextAnchor.MiddleLeft);
+            screen.MoraleFactorText     = Txt("Morale",      bd.transform, "Morale factor:      ×1.00",   28, C_DIM,    TextAnchor.MiddleLeft);
+            screen.DeferredPayText      = Txt("DeferredPay", bd.transform, "Deferred crew pay:  −¤0",     28, C_WARN,   TextAnchor.MiddleLeft);
+            screen.TotalPayoutText      = Txt("Total",       bd.transform, "TOTAL:  ¤0",                  42, C_GREEN,  TextAnchor.MiddleLeft);
             screen.ReputationGainText   = Txt("Rep",      bd.transform, "+0 Reputation",            30, C_ACCENT, TextAnchor.MiddleLeft);
 
             foreach (Transform t in bd.transform) SzEl(t.gameObject, preferredHeight: 44);

@@ -11,7 +11,7 @@ namespace DeepTransit.UI
     public class MissionConfigScreen : MonoBehaviour
     {
         [Header("Destination")]
-        public Transform DestinationListParent;
+        public Transform  DestinationListParent;
         public GameObject DestinationRowPrefab;
 
         [Header("Cargo")]
@@ -22,16 +22,21 @@ namespace DeepTransit.UI
         public Text   CapacityWarningText;
 
         [Header("Summary")]
-        public Text SelectedDestinationText;
-        public Text EstimatedPayoutText;
-        public Text LaunchCostText;
-        public Text VoyageDurationText;
+        public Text   SelectedDestinationText;
+        public Text   EstimatedPayoutText;
+        public Text   LaunchCostText;
+        public Text   VoyageDurationText;
+
+        [Header("Defer Pay")]
+        public Button DeferPayButton;
+        public Text   DeferPayText;
 
         [Header("Actions")]
         public Button LaunchButton;
         public Button BackButton;
 
         DestinationSO _selectedDest;
+        bool          _deferCrewPay;
 
         void Start()
         {
@@ -39,10 +44,12 @@ namespace DeepTransit.UI
             LaunchButton?.onClick.AddListener(OnLaunch);
             PassengerSlider?.onValueChanged.AddListener(_ => OnCargoChanged());
             PackageSlider?.onValueChanged.AddListener(_ => OnCargoChanged());
+            DeferPayButton?.onClick.AddListener(ToggleDeferPay);
         }
 
         void OnEnable()
         {
+            _deferCrewPay = false;
             SetSliderMaxes();
             PopulateDestinations();
             OnCargoChanged();
@@ -113,6 +120,12 @@ namespace DeepTransit.UI
             OnCargoChanged();
         }
 
+        void ToggleDeferPay()
+        {
+            _deferCrewPay = !_deferCrewPay;
+            OnCargoChanged();
+        }
+
         void OnCargoChanged()
         {
             var gm   = GameManager.Instance;
@@ -146,14 +159,24 @@ namespace DeepTransit.UI
             if (_selectedDest == null)
             {
                 SetStatus("Select a destination to continue.", blocked: true);
+                RefreshDeferButton(manifest, canAfford: true);
                 return;
             }
 
-            long launchCost = Economy.PayoutCalculator.CalculateLaunchCost(_selectedDest, manifest);
-            bool canAfford  = gm.CurrencyManager.CanAfford(launchCost);
+            long fullCost  = Economy.PayoutCalculator.CalculateLaunchCost(_selectedDest, manifest, deferCrewPay: false);
+            long deferCost = Economy.PayoutCalculator.CalculateLaunchCost(_selectedDest, manifest, deferCrewPay: true);
+            long activeCost = _deferCrewPay ? deferCost : fullCost;
+            bool canAfford  = gm.CurrencyManager.CanAfford(activeCost);
+
+            RefreshDeferButton(manifest, canAfford: gm.CurrencyManager.CanAfford(fullCost));
+
             if (!canAfford)
             {
-                SetStatus($"Insufficient funds. Need ¤{launchCost:N0} (have ¤{gm.CurrencyManager.SoftCurrency:N0}).", blocked: true);
+                bool couldAffordWithDefer = gm.CurrencyManager.CanAfford(deferCost);
+                string hint = !_deferCrewPay && couldAffordWithDefer
+                    ? " Enable deferred crew pay to launch with fuel-only cost."
+                    : "";
+                SetStatus($"Insufficient funds. Need ¤{activeCost:N0} (have ¤{gm.CurrencyManager.SoftCurrency:N0}).{hint}", blocked: true);
                 return;
             }
 
@@ -161,14 +184,44 @@ namespace DeepTransit.UI
 
             if (LaunchCostText)
             {
-                LaunchCostText.text = $"Launch cost: ¤{launchCost:N0}";
+                LaunchCostText.text = _deferCrewPay
+                    ? $"Launch cost: ¤{deferCost:N0} (fuel only — crew deducted at arrival)"
+                    : $"Launch cost: ¤{fullCost:N0}";
             }
+
             if (EstimatedPayoutText)
             {
-                float est = (passengers * Economy.PayoutCalculator.BasePassengerRate
-                           + packages   * Economy.PayoutCalculator.BasePackageRate)
-                           * _selectedDest.PayoutMultiplier;
-                EstimatedPayoutText.text = $"Est. payout: ¤{est:N0}";
+                float grossEst = (passengers * Economy.PayoutCalculator.BasePassengerRate
+                               + packages   * Economy.PayoutCalculator.BasePackageRate)
+                               * _selectedDest.PayoutMultiplier;
+                if (_deferCrewPay)
+                {
+                    long settlement = Economy.PayoutCalculator.DeferredSettlement(manifest);
+                    EstimatedPayoutText.text = $"Est. payout: ¤{Mathf.Max(0f, grossEst - settlement):N0}  (−¤{settlement:N0} crew)";
+                }
+                else
+                {
+                    EstimatedPayoutText.text = $"Est. payout: ¤{grossEst:N0}";
+                }
+            }
+        }
+
+        void RefreshDeferButton(CargoManifest manifest, bool canAfford)
+        {
+            if (DeferPayText == null) return;
+            if (_deferCrewPay)
+            {
+                DeferPayText.text  = "✓ Crew pay deferred (+30%)";
+                DeferPayText.color = new Color(1f, 0.75f, 0.2f);
+            }
+            else
+            {
+                DeferPayText.text  = canAfford
+                    ? "Defer crew pay (+30% penalty)"
+                    : "⚠ Defer crew pay to afford launch";
+                DeferPayText.color = canAfford
+                    ? new Color(0.6f, 0.6f, 0.6f)
+                    : new Color(1f, 0.75f, 0.2f);
             }
         }
 
@@ -208,7 +261,7 @@ namespace DeepTransit.UI
                 PackageCount   = PackageSlider   ? Mathf.RoundToInt(PackageSlider.value)   : 0,
             };
 
-            long launchCost = Economy.PayoutCalculator.CalculateLaunchCost(_selectedDest, manifest);
+            long launchCost = Economy.PayoutCalculator.CalculateLaunchCost(_selectedDest, manifest, _deferCrewPay);
             if (!gm.CurrencyManager.Spend(launchCost))
             {
                 Debug.LogError($"[MissionConfig] OnLaunch: can't afford launch cost ¤{launchCost}.");
@@ -216,7 +269,7 @@ namespace DeepTransit.UI
                 return;
             }
 
-            Debug.Log($"[MissionConfig] Launching → {_selectedDest.DisplayName}  passengers={manifest.PassengerCount}  packages={manifest.PackageCount}  cost=¤{launchCost}");
+            Debug.Log($"[MissionConfig] Launching → {_selectedDest.DisplayName}  passengers={manifest.PassengerCount}  packages={manifest.PackageCount}  cost=¤{launchCost}  deferred={_deferCrewPay}");
 
             var assignedIds = new List<string>();
             foreach (var c in gm.ContractorManager.Roster)
@@ -226,7 +279,7 @@ namespace DeepTransit.UI
             }
 
             ship.IsOnMission = true;
-            gm.MissionManager.LaunchMission(ship.Name, _selectedDest.Id, manifest, assignedIds);
+            gm.MissionManager.LaunchMission(ship.Name, _selectedDest.Id, manifest, assignedIds, _deferCrewPay);
             UIManager.Instance?.Show(Screen.Hub);
         }
     }

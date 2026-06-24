@@ -63,7 +63,7 @@ namespace DeepTransit.Missions
             OnMissionArrived?.Invoke(mission, payout);
         }
 
-        public Mission LaunchMission(string shipName, string destinationId, CargoManifest cargo, List<string> contractorIds)
+        public Mission LaunchMission(string shipName, string destinationId, CargoManifest cargo, List<string> contractorIds, bool deferCrewPay = false)
         {
             var gm = GameManager.Instance;
             long start = gm?.TimeManager?.ElapsedGameMinutes ?? 0;
@@ -77,6 +77,7 @@ namespace DeepTransit.Missions
                 DurationMinutes = dest?.VoyageMinutes ?? TimeManager.HoursToGameMinutes(4),
                 Cargo = cargo,
                 AssignedContractorIds = contractorIds ?? new List<string>(),
+                DeferredCrewPay = deferCrewPay,
             };
             mission.Launch(start);
             ActiveMissions.Add(mission);

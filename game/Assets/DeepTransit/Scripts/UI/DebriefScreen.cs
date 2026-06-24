@@ -17,6 +17,7 @@ namespace DeepTransit.UI
         public Text PackageRevenueText;
         public Text HullPenaltyText;
         public Text MoraleFactorText;
+        public Text DeferredPayText;
         public Text TotalPayoutText;
         public Text ReputationGainText;
 
@@ -51,6 +52,11 @@ namespace DeepTransit.UI
             if (PackageRevenueText)   PackageRevenueText.text   = $"Package revenue:    ¤{payout.PackageRevenue:N0}";
             if (HullPenaltyText)      HullPenaltyText.text      = $"Hull penalty:       -{payout.HullPenaltyPct * 100f:F0}%";
             if (MoraleFactorText)     MoraleFactorText.text      = $"Morale factor:      ×{payout.MoraleFactor:F2}";
+            if (DeferredPayText)
+            {
+                DeferredPayText.gameObject.SetActive(payout.DeferredPayDeduction > 0);
+                DeferredPayText.text = $"Deferred crew pay:  −¤{payout.DeferredPayDeduction:N0}";
+            }
             if (TotalPayoutText)      TotalPayoutText.text       = $"TOTAL:  ¤{payout.GrossPayout:N0}";
             if (ReputationGainText)   ReputationGainText.text    = $"+{payout.ReputationGain:F1} Reputation";
 

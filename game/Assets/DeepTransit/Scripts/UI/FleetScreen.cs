@@ -24,6 +24,9 @@ namespace DeepTransit.UI
         public Transform ModuleListParent;
         public GameObject ModuleRowPrefab;
 
+        [Header("Currency")]
+        public Text BalanceText;
+
         [Header("Nav")]
         public Button BackButton;
 
@@ -31,7 +34,6 @@ namespace DeepTransit.UI
 
         void Start()
         {
-
             BackButton?.onClick.AddListener(() => UIManager.Instance?.Show(Screen.Hub));
             RenameButton?.onClick.AddListener(OnRename);
         }
@@ -40,7 +42,21 @@ namespace DeepTransit.UI
         {
             var gm = GameManager.Instance;
             _ship = gm?.ShipManager?.Ships?.Count > 0 ? gm.ShipManager.Ships[0] : null;
+            if (gm != null) gm.CurrencyManager.OnChanged += RefreshBalance;
             Refresh();
+        }
+
+        void OnDisable()
+        {
+            var gm = GameManager.Instance;
+            if (gm != null) gm.CurrencyManager.OnChanged -= RefreshBalance;
+        }
+
+        void RefreshBalance()
+        {
+            var gm = GameManager.Instance;
+            if (BalanceText && gm != null)
+                BalanceText.text = $"¤ {gm.CurrencyManager.SoftCurrency:N0}";
         }
 
         void OnRename()
@@ -56,6 +72,7 @@ namespace DeepTransit.UI
 
         void Refresh()
         {
+            RefreshBalance();
             if (_ship == null) return;
             if (ShipNameText)  ShipNameText.text  = _ship.Name;
             if (HullStatText)  HullStatText.text  = $"Hull: {_ship.GetStat(ShipStat.HullIntegrity):F0}";
