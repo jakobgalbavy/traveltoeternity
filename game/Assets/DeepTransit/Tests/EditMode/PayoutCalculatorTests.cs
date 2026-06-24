@@ -274,6 +274,64 @@ namespace DeepTransit.Tests
                 "Deferring everything costs more overall than paying upfront.");
         }
 
+        // ── Mission type / minimum payout ────────────────────────────────────
+
+        [Test]
+        public void BasicMission_MinimumPayout_AppliedOnTerribleRun()
+        {
+            var dest = MakeDest(multiplier: 1.2f, voyageMinutes: 240);
+            dest.MissionType    = Destinations.MissionType.Basic;
+            dest.MinimumPayout  = 100;
+
+            // Worst possible run: zero morale → passenger revenue = 0; zero cargo
+            var mission = MakeMission(0, 0, hull: 1f, morale: 0f);
+            var result  = PayoutCalculator.Calculate(mission, dest);
+
+            Assert.AreEqual(100L, result.GrossPayout);
+        }
+
+        [Test]
+        public void BasicMission_MinimumPayout_NotApplied_WhenGrossIsHigher()
+        {
+            var dest = MakeDest(multiplier: 1.2f, voyageMinutes: 240);
+            dest.MissionType   = Destinations.MissionType.Basic;
+            dest.MinimumPayout = 100;
+
+            var mission = MakeMission(5, 0, hull: 1f, morale: 1f);
+            var result  = PayoutCalculator.Calculate(mission, dest);
+
+            Assert.Greater(result.GrossPayout, 100L);
+        }
+
+        [Test]
+        public void BasicMission_DeferredPay_FloorStillApplies()
+        {
+            var dest = MakeDest(multiplier: 1.2f, voyageMinutes: 240);
+            dest.MissionType   = Destinations.MissionType.Basic;
+            dest.MinimumPayout = 100;
+
+            // Single passenger, zero morale — gross before deduction is tiny
+            var mission = MakeMission(1, 0, hull: 1f, morale: 0f);
+            mission.DeferredCrewPay = true;
+
+            var result = PayoutCalculator.Calculate(mission, dest);
+
+            Assert.GreaterOrEqual(result.GrossPayout, 100L);
+        }
+
+        [Test]
+        public void SpecialMission_NoFloor_CanPayZero()
+        {
+            var dest = MakeDest(multiplier: 1.0f, voyageMinutes: 240);
+            dest.MissionType   = Destinations.MissionType.Special;
+            dest.MinimumPayout = 0;
+
+            var mission = MakeMission(0, 0, hull: 1f, morale: 0f);
+            var result  = PayoutCalculator.Calculate(mission, dest);
+
+            Assert.AreEqual(0L, result.GrossPayout);
+        }
+
         // ── Profitability sanity checks ───────────────────────────────────────
 
         [Test]

@@ -65,6 +65,9 @@ namespace DeepTransit.Economy
                 gross = System.Math.Max(0L, gross - deferredDeduction);
             }
 
+            if (destination.MissionType == Destinations.MissionType.Basic)
+                gross = System.Math.Max(gross, destination.MinimumPayout);
+
             float repGain = BaseReputationGain * destination.PayoutMultiplier
                 * (mission.HullIntegrity > 0.7f ? 1.2f : 1f);
 

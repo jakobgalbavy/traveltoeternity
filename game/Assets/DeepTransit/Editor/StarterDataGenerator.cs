@@ -70,6 +70,8 @@ namespace DeepTransit.Editor
             proxima.VoyageMinutes = 240;        // 4h game-time
             proxima.PayoutMultiplier = 1.2f;
             proxima.ReputationRequired = 0;
+            proxima.MissionType = MissionType.Basic;
+            proxima.MinimumPayout = 100;
             proxima.Hazards = new HazardProfile { MeteoriteRisk = 0.1f, RadiationRisk = 0.2f, MechanicalFailureRisk = 0.15f };
 
             var kepler = Make<DestinationSO>($"{ResRoot}/Destinations", "Destination_Kepler452b");
@@ -80,6 +82,8 @@ namespace DeepTransit.Editor
             kepler.VoyageMinutes = 1440;        // 1 game-day
             kepler.PayoutMultiplier = 3.5f;
             kepler.ReputationRequired = 20;
+            kepler.MissionType = MissionType.Basic;
+            kepler.MinimumPayout = 300;
             kepler.Hazards = new HazardProfile { MeteoriteRisk = 0.2f, RadiationRisk = 0.45f, MechanicalFailureRisk = 0.3f };
             proxima.UnlocksOnFirstCompletion = new[] { kepler };
             EditorUtility.SetDirty(proxima);
@@ -92,6 +96,8 @@ namespace DeepTransit.Editor
             trappist.VoyageMinutes = 4320;      // 3 game-days
             trappist.PayoutMultiplier = 7f;
             trappist.ReputationRequired = 60;
+            trappist.MissionType = MissionType.Basic;
+            trappist.MinimumPayout = 750;
             trappist.Hazards = new HazardProfile { MeteoriteRisk = 0.35f, RadiationRisk = 0.6f, MechanicalFailureRisk = 0.5f, PassengerUnrestRisk = 0.3f };
             kepler.UnlocksOnFirstCompletion = new[] { trappist };
             EditorUtility.SetDirty(kepler);
