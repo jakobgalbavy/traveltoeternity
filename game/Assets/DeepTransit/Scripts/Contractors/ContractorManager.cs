@@ -72,10 +72,29 @@ namespace DeepTransit.Contractors
             Roster.Remove(contractor);
         }
 
+        public ContractorInstance GetById(string instanceId)
+        {
+            foreach (var c in Roster)
+                if (c.InstanceId == instanceId) return c;
+            return null;
+        }
+
         public ContractorInstance GetByRole(ContractorRole role)
         {
             foreach (var c in Roster)
                 if (!c.IsOnMission && c.Definition?.Role == role) return c;
+            return null;
+        }
+
+        // Find a contractor with the given role from a specific set of assigned IDs.
+        public ContractorInstance GetByRoleFromAssigned(ContractorRole role, System.Collections.Generic.List<string> assignedIds)
+        {
+            if (assignedIds == null) return null;
+            foreach (var id in assignedIds)
+            {
+                var c = GetById(id);
+                if (c?.Definition?.Role == role) return c;
+            }
             return null;
         }
 

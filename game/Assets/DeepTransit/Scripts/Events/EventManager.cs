@@ -13,6 +13,9 @@ namespace DeepTransit.Events
         public event Action<Mission, MissionEvent> OnEventFired;
         public event Action<Mission, MissionEvent, bool> OnEventResolved;
 
+        // Chance multiplier when a specialist is on board and available.
+        private const float CrewPreventionMultiplier = 0.1f;
+
         private readonly System.Random _rng = new();
 
         void Awake()
@@ -52,8 +55,8 @@ namespace DeepTransit.Events
             {
                 if (evSO.ChancePerHour <= 0f) continue;
                 if (!MeetsPrecondition(evSO, mission)) continue;
-                if (_rng.NextDouble() > evSO.ChancePerHour) continue;
                 if (IsAlreadyActive(mission, evSO.Id)) continue;
+                if (_rng.NextDouble() > EffectiveChance(evSO, mission)) continue;
 
                 var ev = new MissionEvent
                 {
@@ -135,6 +138,41 @@ namespace DeepTransit.Events
 
             if (mission.HullIntegrity <= 0f)
                 mission.Status = Missions.MissionStatus.Failed;
+        }
+
+        // Returns the effective fire-chance for an event, reduced when a covering
+        // specialist is on board and not currently occupied by another crisis.
+        float EffectiveChance(GameEventSO evSO, Mission mission)
+        {
+            if (evSO.Options == null || evSO.Options.Length == 0)
+                return evSO.ChancePerHour;
+
+            var gm = Core.GameManager.Instance;
+            if (gm == null) return evSO.ChancePerHour;
+
+            foreach (var option in evSO.Options)
+            {
+                var role = option.RequiredRole;
+                var contractor = gm.ContractorManager.GetByRoleFromAssigned(role, mission.AssignedContractorIds);
+                if (contractor == null) continue;
+                if (IsRoleBusy(role, mission)) continue;
+                // Specialist is on board and free — exceptional circumstances only.
+                return evSO.ChancePerHour * CrewPreventionMultiplier;
+            }
+            return evSO.ChancePerHour;
+        }
+
+        // A role is busy when there is already an unresolved active event on this
+        // mission that requires a contractor of that same role.
+        bool IsRoleBusy(ContractorRole role, Mission mission)
+        {
+            foreach (var ev in mission.ActiveEvents)
+            {
+                if (ev.IsResolved || ev.IsEscalated || ev.Definition?.Options == null) continue;
+                foreach (var option in ev.Definition.Options)
+                    if (option.RequiredRole == role) return true;
+            }
+            return false;
         }
 
         bool MeetsPrecondition(GameEventSO evSO, Mission mission)

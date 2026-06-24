@@ -94,7 +94,7 @@ namespace DeepTransit.UI
                 var texts = obj.GetComponentsInChildren<Text>();
                 var btn = obj.GetComponent<Button>();
 
-                var contractor = gm?.ContractorManager?.GetByRole(option.RequiredRole);
+                var contractor = gm?.ContractorManager?.GetByRoleFromAssigned(option.RequiredRole, _mission?.AssignedContractorIds);
                 float chance = Mathf.Clamp01(option.BaseSuccessChance +
                     (contractor != null ? option.ContractorBonus * contractor.SuccessChance : 0f));
 
