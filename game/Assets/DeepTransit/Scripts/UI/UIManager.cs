@@ -57,6 +57,7 @@ namespace DeepTransit.UI
             _fleet?.gameObject.SetActive(screen == Screen.Fleet);
             _missionConfig?.gameObject.SetActive(screen == Screen.MissionConfig);
             _contractors?.gameObject.SetActive(screen == Screen.Contractors);
+            // Event card is an overlay — Hub visibility is managed separately (see DisplayEvent)
             _eventCard?.gameObject.SetActive(screen == Screen.Event);
             _debrief?.gameObject.SetActive(screen == Screen.Debrief);
         }
@@ -77,7 +78,12 @@ namespace DeepTransit.UI
             _eventCard?.Populate(mission, ev);
             var tm = GameManager.Instance?.TimeManager;
             if (tm != null) tm.Paused = true;
-            Show(Screen.Event);
+
+            // Event card overlays on top — keep Hub visible behind it so the
+            // player can still see mission progress and currency while deciding.
+            _hub?.gameObject.SetActive(true);
+            _eventCard?.gameObject.SetActive(true);
+            _current = Screen.Event;
         }
 
         // Called by EventCardScreen when the player resolves or skips an event.
@@ -91,15 +97,17 @@ namespace DeepTransit.UI
             }
             else
             {
+                _eventCard?.gameObject.SetActive(false);
                 var tm = GameManager.Instance?.TimeManager;
                 if (tm != null) tm.Paused = false;
-                Show(Screen.Hub);
+                _current = Screen.Hub; // Hub was already active; just update tracker
             }
         }
 
         public void ShowDebrief(Mission mission, PayoutResult payout)
         {
             _eventQueue.Clear();
+            _eventCard?.gameObject.SetActive(false);
             var tm = GameManager.Instance?.TimeManager;
             if (tm != null) tm.Paused = false;
             _debrief?.Populate(mission, payout);

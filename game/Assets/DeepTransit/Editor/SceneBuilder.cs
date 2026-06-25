@@ -374,37 +374,49 @@ namespace DeepTransit.Editor
 
         static void BuildEventCard(Transform parent, GameObject optionBtnPrefab)
         {
+            // Bottom-sheet overlay — Hub stays visible above it while player decides.
             var root   = Pnl("EventCard", parent, new Color(0.047f, 0.055f, 0.090f, 0.97f));
+            Anchors(root, 0, 0, 1, 0.88f, 0, 0, 0, 0); // covers bottom 88% of canvas
             var screen = root.AddComponent<EventCardScreen>();
             screen.BackgroundPanel = root.GetComponent<Image>();
 
-            screen.SeverityText    = Txt("Severity",    root.transform, "CRITICAL",             42, C_WARN,  TextAnchor.UpperCenter);
-            screen.TitleText       = Txt("Title",       root.transform, "Event Title",           52, C_TEXT,  TextAnchor.UpperCenter);
-            screen.ShipNameText    = Txt("ShipName",    root.transform, "ISV Pathfinder",        30, C_DIM,   TextAnchor.UpperCenter);
-            screen.DescriptionText = Txt("Description", root.transform, "Event description.",    30, C_TEXT,  TextAnchor.UpperLeft);
+            // Thin severity-coloured strip at top of panel as a visual handle
+            var topStrip = Pnl("TopStrip", root.transform, C_WARN);
+            Anchors(topStrip, 0, 0.975f, 1, 1.0f, 0, 0, 0, 0);
 
-            Anchors(screen.SeverityText.gameObject,    0, 0.76f, 1, 0.85f, 20, 0, -20, 0);
-            Anchors(screen.TitleText.gameObject,       0, 0.66f, 1, 0.76f, 20, 0, -20, 0);
-            Anchors(screen.ShipNameText.gameObject,    0, 0.61f, 1, 0.66f, 20, 0, -20, 0);
-            Anchors(screen.DescriptionText.gameObject, 0, 0.48f, 1, 0.61f, 20, 0, -20, 0);
+            screen.CountdownText = Txt("Countdown",  root.transform, "", 26, C_WARN, TextAnchor.MiddleCenter);
+            Anchors(screen.CountdownText.gameObject, 0, 0.90f, 1, 0.975f, 20, 0, -20, 0);
 
-            screen.CountdownText = Txt("Countdown", root.transform, "", 28, C_WARN, TextAnchor.MiddleCenter);
-            Anchors(screen.CountdownText.gameObject, 0, 0.86f, 1, 0.92f, 20, 0, -20, 0);
+            screen.SeverityText    = Txt("Severity",    root.transform, "CRITICAL",             38, C_WARN,  TextAnchor.UpperCenter);
+            screen.TitleText       = Txt("Title",       root.transform, "Event Title",           48, C_TEXT,  TextAnchor.UpperCenter);
+            screen.ShipNameText    = Txt("ShipName",    root.transform, "ISV Pathfinder",        28, C_DIM,   TextAnchor.UpperCenter);
+            screen.DescriptionText = Txt("Description", root.transform, "Event description.",    28, C_TEXT,  TextAnchor.UpperLeft);
+
+            Anchors(screen.SeverityText.gameObject,    0, 0.80f, 1, 0.90f, 20, 0, -20, 0);
+            Anchors(screen.TitleText.gameObject,       0, 0.70f, 1, 0.80f, 20, 0, -20, 0);
+            Anchors(screen.ShipNameText.gameObject,    0, 0.64f, 1, 0.70f, 20, 0, -20, 0);
+            Anchors(screen.DescriptionText.gameObject, 0, 0.50f, 1, 0.64f, 20, 0, -20, 0);
 
             var statRow = HRow("StatRow", root.transform, 15);
-            Anchors(statRow, 0, 0.47f, 1, 0.54f, 20, 5, -20, -5);
+            Anchors(statRow, 0, 0.44f, 1, 0.50f, 20, 5, -20, -5);
             screen.HullText   = Txt("Hull",   statRow.transform, "Hull 100%",   24, C_TEXT,  TextAnchor.MiddleCenter);
             screen.MoraleText = Txt("Morale", statRow.transform, "Morale 100%", 24, C_TEXT,  TextAnchor.MiddleCenter);
             screen.CargoText  = Txt("Cargo",  statRow.transform, "Cargo 100%",  24, C_TEXT,  TextAnchor.MiddleCenter);
             screen.FoodText   = Txt("Food",   statRow.transform, "Food 100%",   24, C_TEXT,  TextAnchor.MiddleCenter);
 
             var optPanel = Pnl("OptionsPanel", root.transform, Color.clear);
-            Anchors(optPanel, 0, 0.05f, 1, 0.47f, 20, 10, -20, -10);
+            Anchors(optPanel, 0, 0.14f, 1, 0.44f, 20, 10, -20, -10);
             var optL = optPanel.AddComponent<VerticalLayoutGroup>();
             optL.spacing = 15; optL.childControlWidth = true; optL.childControlHeight = true;
             optL.childForceExpandWidth = true; optL.childForceExpandHeight = false;
             screen.OptionsParent      = optPanel.transform;
             screen.OptionButtonPrefab = optionBtnPrefab;
+
+            // Ignore / dismiss button — secondary action at bottom of card
+            var ignoreBtn = Btn("IgnoreBtn", root.transform, "Continue voyage →  (issue may worsen)", new Color(0f, 0f, 0f, 0f), C_DIM);
+            Anchors(ignoreBtn.gameObject, 0.05f, 0.02f, 0.95f, 0.12f, 0, 0, 0, 0);
+            ignoreBtn.GetComponentInChildren<Text>().Let(t => { t.fontSize = 26; t.alignment = TextAnchor.MiddleCenter; });
+            screen.IgnoreButton = ignoreBtn;
 
             EditorUtility.SetDirty(root);
         }

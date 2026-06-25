@@ -238,6 +238,51 @@ namespace DeepTransit.Tests
             Assert.AreEqual(2, mission.ActiveEvents.Count);
         }
 
+        // ── Event cooldown ───────────────────────────────────────────────────
+
+        [Test]
+        public void TickHour_SecondEvent_BlockedWithinCooldownWindow()
+        {
+            var evSO = MakeEventSO("evt", successChance: 0f);
+            evSO.ChancePerHour = 1f;
+            _em.AllEvents = new[] { evSO };
+
+            var mission = MakeInTransitMission();
+            _em.TickHour(mission, 60);     // fires; LastEventFiredMinute = 60
+            mission.ActiveEvents.Clear();  // remove it so IsAlreadyActive won't block
+            _em.TickHour(mission, 120);    // 60 min gap < 120 min cooldown → blocked
+
+            Assert.AreEqual(0, mission.ActiveEvents.Count);
+        }
+
+        [Test]
+        public void TickHour_EventFiresAgainAfterCooldownExpires()
+        {
+            var evSO = MakeEventSO("evt", successChance: 0f);
+            evSO.ChancePerHour = 1f;
+            _em.AllEvents = new[] { evSO };
+
+            var mission = MakeInTransitMission();
+            _em.TickHour(mission, 60);     // fires; LastEventFiredMinute = 60
+            mission.ActiveEvents.Clear();
+            _em.TickHour(mission, 180);    // 120 min gap == cooldown → allowed
+
+            Assert.AreEqual(1, mission.ActiveEvents.Count);
+        }
+
+        [Test]
+        public void TickHour_FirstEvent_AlwaysAllowed_NoMatterWhenMissionStarts()
+        {
+            var evSO = MakeEventSO("evt", successChance: 0f);
+            evSO.ChancePerHour = 1f;
+            _em.AllEvents = new[] { evSO };
+
+            var mission = MakeInTransitMission(); // LastEventFiredMinute = -1
+            _em.TickHour(mission, 60);
+
+            Assert.AreEqual(1, mission.ActiveEvents.Count);
+        }
+
         // ── TickHour preconditions ────────────────────────────────────────────
 
         [Test]

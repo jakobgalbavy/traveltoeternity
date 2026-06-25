@@ -28,6 +28,9 @@ namespace DeepTransit.UI
         [Header("Urgency")]
         public Text CountdownText;
 
+        [Header("Dismiss")]
+        public Button IgnoreButton;
+
         [Header("Visual")]
         public Image BackgroundPanel;
 
@@ -42,7 +45,10 @@ namespace DeepTransit.UI
         Mission      _mission;
         MissionEvent _event;
 
-        void Start() { }
+        void Start()
+        {
+            IgnoreButton?.onClick.AddListener(() => UIManager.Instance?.OnEventDismissed());
+        }
 
         void Update()
         {

@@ -38,6 +38,7 @@ namespace DeepTransit.Missions
 
         // Events
         public List<MissionEvent> ActiveEvents = new();
+        public long LastEventFiredMinute = -1; // -1 means no event has fired yet
 
         public List<MissionEvent> PendingEvents
         {

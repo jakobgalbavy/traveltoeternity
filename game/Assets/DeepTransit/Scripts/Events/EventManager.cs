@@ -15,6 +15,8 @@ namespace DeepTransit.Events
 
         // Chance multiplier when a specialist is on board and available.
         private const float CrewPreventionMultiplier = 0.1f;
+        // Minimum game-minutes that must pass between random event firings on the same mission.
+        public const long EventCooldownMinutes = 120;
 
         private readonly System.Random _rng = new();
 
@@ -48,6 +50,10 @@ namespace DeepTransit.Events
         {
             if (AllEvents == null) return null;
 
+            // Enforce cooldown — don't pile on events back-to-back.
+            if (mission.LastEventFiredMinute >= 0 && gameMinute - mission.LastEventFiredMinute < EventCooldownMinutes)
+                return null;
+
             var candidates = new List<GameEventSO>(AllEvents);
             candidates.Sort((_, __) => _rng.Next(-1, 2));
 
@@ -66,6 +72,7 @@ namespace DeepTransit.Events
                     EscalatesAtMinute = gameMinute + evSO.EscalationMinutes,
                 };
                 mission.ActiveEvents.Add(ev);
+                mission.LastEventFiredMinute = gameMinute;
                 return ev;
             }
             return null;
