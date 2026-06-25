@@ -385,48 +385,46 @@ namespace DeepTransit.Editor
             var scrim = Pnl("Scrim", root.transform, new Color(0f, 0f, 0f, 0.78f));
             scrim.GetComponent<Image>().raycastTarget = true;
 
-            // Floating card panel — inset from edges, near full-height
+            // Compact floating card — 92% wide, 68% tall, centred vertically
             var card = Pnl("CardPanel", root.transform, new Color(0.047f, 0.055f, 0.090f, 0.99f));
-            Anchors(card, 0.03f, 0.05f, 0.97f, 0.92f, 0, 0, 0, 0);
+            Anchors(card, 0.15f, 0.20f, 0.85f, 0.88f, 0, 0, 0, 0);
             screen.BackgroundPanel = card.GetComponent<Image>();
 
-            // Thin severity-coloured bar at the very top of the card
+            // Thin severity-coloured bar at top of card
             var topStrip = Pnl("TopStrip", card.transform, C_WARN);
-            Anchors(topStrip, 0, 0.975f, 1, 1.0f, 0, 0, 0, 0);
+            Anchors(topStrip, 0, 0.982f, 1, 1.0f, 0, 0, 0, 0);
 
-            // All content positioned relative to CardPanel
-            screen.CountdownText = Txt("Countdown", card.transform, "", 26, C_WARN, TextAnchor.MiddleCenter);
-            Anchors(screen.CountdownText.gameObject, 0, 0.91f, 1, 0.975f, 20, 0, -20, 0);
+            // Countdown + severity share the top band
+            screen.CountdownText = Txt("Countdown", card.transform, "", 22, C_WARN, TextAnchor.MiddleRight);
+            Anchors(screen.CountdownText.gameObject, 0.35f, 0.90f, 1, 0.982f, 0, 0, -20, 0);
 
-            screen.SeverityText    = Txt("Severity",    card.transform, "CRITICAL",          36, C_WARN, TextAnchor.UpperCenter);
-            screen.TitleText       = Txt("Title",       card.transform, "Event Title",        46, C_TEXT, TextAnchor.UpperCenter);
-            screen.ShipNameText    = Txt("ShipName",    card.transform, "ISV Pathfinder",     26, C_DIM,  TextAnchor.UpperCenter);
-            screen.DescriptionText = Txt("Description", card.transform, "Event description.", 27, C_TEXT, TextAnchor.UpperLeft);
+            screen.SeverityText    = Txt("Severity",    card.transform, "CRITICAL",          28, C_WARN, TextAnchor.MiddleLeft);
+            screen.TitleText       = Txt("Title",       card.transform, "Event Title",        40, C_TEXT, TextAnchor.UpperLeft);
+            screen.DescriptionText = Txt("Description", card.transform, "Event description.", 24, C_TEXT, TextAnchor.UpperLeft);
 
-            Anchors(screen.SeverityText.gameObject,    0, 0.80f, 1, 0.91f, 20, 0, -20, 0);
-            Anchors(screen.TitleText.gameObject,       0, 0.70f, 1, 0.80f, 20, 0, -20, 0);
-            Anchors(screen.ShipNameText.gameObject,    0, 0.64f, 1, 0.70f, 20, 0, -20, 0);
-            Anchors(screen.DescriptionText.gameObject, 0, 0.50f, 1, 0.64f, 20, 0, -20, 0);
+            Anchors(screen.SeverityText.gameObject,    0, 0.90f, 0.35f, 0.982f, 20, 0, 0, 0);
+            Anchors(screen.TitleText.gameObject,       0, 0.78f, 1,    0.90f,  20, 0, -20, 0);
+            Anchors(screen.DescriptionText.gameObject, 0, 0.58f, 1,    0.78f,  20, 0, -20, 0);
 
-            var statRow = HRow("StatRow", card.transform, 15);
-            Anchors(statRow, 0, 0.44f, 1, 0.50f, 20, 5, -20, -5);
-            screen.HullText   = Txt("Hull",   statRow.transform, "Hull 100%",   22, C_TEXT, TextAnchor.MiddleCenter);
-            screen.MoraleText = Txt("Morale", statRow.transform, "Morale 100%", 22, C_TEXT, TextAnchor.MiddleCenter);
-            screen.CargoText  = Txt("Cargo",  statRow.transform, "Cargo 100%",  22, C_TEXT, TextAnchor.MiddleCenter);
-            screen.FoodText   = Txt("Food",   statRow.transform, "Food 100%",   22, C_TEXT, TextAnchor.MiddleCenter);
+            var statRow = HRow("StatRow", card.transform, 10);
+            Anchors(statRow, 0, 0.51f, 1, 0.58f, 20, 4, -20, -4);
+            screen.HullText   = Txt("Hull",   statRow.transform, "Hull 100%",   20, C_DIM, TextAnchor.MiddleCenter);
+            screen.MoraleText = Txt("Morale", statRow.transform, "Morale 100%", 20, C_DIM, TextAnchor.MiddleCenter);
+            screen.CargoText  = Txt("Cargo",  statRow.transform, "Cargo 100%",  20, C_DIM, TextAnchor.MiddleCenter);
+            screen.FoodText   = Txt("Food",   statRow.transform, "Food 100%",   20, C_DIM, TextAnchor.MiddleCenter);
 
             var optPanel = Pnl("OptionsPanel", card.transform, Color.clear);
-            Anchors(optPanel, 0, 0.14f, 1, 0.44f, 20, 10, -20, -10);
+            Anchors(optPanel, 0, 0.14f, 1, 0.51f, 20, 8, -20, -8);
             var optL = optPanel.AddComponent<VerticalLayoutGroup>();
-            optL.spacing = 14; optL.childControlWidth = true; optL.childControlHeight = true;
+            optL.spacing = 10; optL.childControlWidth = true; optL.childControlHeight = true;
             optL.childForceExpandWidth = true; optL.childForceExpandHeight = false;
             screen.OptionsParent      = optPanel.transform;
             screen.OptionButtonPrefab = optionBtnPrefab;
 
-            // Dismiss — secondary action at the bottom of the card
+            // Dismiss — secondary action at bottom of card
             var ignoreBtn = Btn("IgnoreBtn", card.transform, "Continue voyage →  (issue may worsen)", Color.clear, C_DIM);
-            Anchors(ignoreBtn.gameObject, 0.05f, 0.02f, 0.95f, 0.12f, 0, 0, 0, 0);
-            ignoreBtn.GetComponentInChildren<Text>().Let(t => { t.fontSize = 25; t.alignment = TextAnchor.MiddleCenter; });
+            Anchors(ignoreBtn.gameObject, 0.04f, 0.02f, 0.96f, 0.12f, 0, 0, 0, 0);
+            ignoreBtn.GetComponentInChildren<Text>().Let(t => { t.fontSize = 22; t.alignment = TextAnchor.MiddleCenter; });
             screen.IgnoreButton = ignoreBtn;
 
             EditorUtility.SetDirty(root);
