@@ -387,7 +387,7 @@ namespace DeepTransit.Editor
 
             // Compact floating card — 92% wide, 68% tall, centred vertically
             var card = Pnl("CardPanel", root.transform, new Color(0.047f, 0.055f, 0.090f, 0.99f));
-            Anchors(card, 0.15f, 0.20f, 0.85f, 0.88f, 0, 0, 0, 0);
+            Anchors(card, 0.15f, 0.28f, 0.85f, 0.88f, 0, 0, 0, 0);
             screen.BackgroundPanel = card.GetComponent<Image>();
 
             // Thin severity-coloured bar at top of card
