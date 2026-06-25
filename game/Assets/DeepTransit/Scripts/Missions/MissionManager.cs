@@ -70,7 +70,7 @@ namespace DeepTransit.Missions
         public static long ApplyEngineEfficiency(long baseMinutes, float engineEfficiency)
         {
             float factor = Mathf.Max(BaselineEngineEfficiency, engineEfficiency) / BaselineEngineEfficiency;
-            return Mathf.Max(1L, (long)Mathf.RoundToInt(baseMinutes / factor));
+            return System.Math.Max(1L, (long)Mathf.RoundToInt(baseMinutes / factor));
         }
 
         public Mission LaunchMission(string shipName, string destinationId, CargoManifest cargo, List<string> contractorIds, bool deferCrewPay = false)
