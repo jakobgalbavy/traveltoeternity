@@ -17,6 +17,8 @@ namespace DeepTransit.Events
         private const float CrewPreventionMultiplier = 0.1f;
         // Minimum game-minutes that must pass between random event firings on the same mission.
         public const long EventCooldownMinutes = 120;
+        // How much each point of NavigationRating suppresses random event chances.
+        private const float NavigationEventScale = 0.25f;
 
         private readonly System.Random _rng = new();
 
@@ -147,15 +149,19 @@ namespace DeepTransit.Events
                 mission.Status = Missions.MissionStatus.Failed;
         }
 
-        // Returns the effective fire-chance for an event, reduced when a covering
-        // specialist is on board and not currently occupied by another crisis.
+        // Returns the effective fire-chance for an event, reduced by the ship's
+        // NavigationRating and further reduced when a covering specialist is on board.
         float EffectiveChance(GameEventSO evSO, Mission mission)
         {
-            if (evSO.Options == null || evSO.Options.Length == 0)
-                return evSO.ChancePerHour;
-
             var gm = Core.GameManager.Instance;
-            if (gm == null) return evSO.ChancePerHour;
+
+            // Navigation suite reduces all random event chances.
+            float navRating = gm?.ShipManager?.GetByName(mission.ShipName)
+                                  ?.GetStat(Ships.ShipStat.NavigationRating) ?? 0f;
+            float chance = evSO.ChancePerHour / (1f + navRating * NavigationEventScale);
+
+            if (evSO.Options == null || evSO.Options.Length == 0 || gm == null)
+                return chance;
 
             foreach (var option in evSO.Options)
             {
@@ -164,9 +170,9 @@ namespace DeepTransit.Events
                 if (contractor == null) continue;
                 if (IsRoleBusy(role, mission)) continue;
                 // Specialist is on board and free — exceptional circumstances only.
-                return evSO.ChancePerHour * CrewPreventionMultiplier;
+                return chance * CrewPreventionMultiplier;
             }
-            return evSO.ChancePerHour;
+            return chance;
         }
 
         // A role is busy when there is already an unresolved active event on this

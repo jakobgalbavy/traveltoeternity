@@ -374,48 +374,59 @@ namespace DeepTransit.Editor
 
         static void BuildEventCard(Transform parent, GameObject optionBtnPrefab)
         {
-            // Bottom-sheet overlay — Hub stays visible above it while player decides.
-            var root   = Pnl("EventCard", parent, new Color(0.047f, 0.055f, 0.090f, 0.97f));
-            Anchors(root, 0, 0, 1, 0.88f, 0, 0, 0, 0); // covers bottom 88% of canvas
+            // Full-screen transparent root — Hub stays visible through the scrim.
+            var root   = new GameObject("EventCard");
+            root.transform.SetParent(parent, false);
+            root.AddComponent<Image>().color = Color.clear; // transparent root catches no taps
+            Full(root.GetComponent<RectTransform>());
             var screen = root.AddComponent<EventCardScreen>();
-            screen.BackgroundPanel = root.GetComponent<Image>();
 
-            // Thin severity-coloured strip at top of panel as a visual handle
-            var topStrip = Pnl("TopStrip", root.transform, C_WARN);
+            // Dark scrim — dims Hub content behind the card
+            var scrim = Pnl("Scrim", root.transform, new Color(0f, 0f, 0f, 0.78f));
+            scrim.GetComponent<Image>().raycastTarget = true;
+
+            // Floating card panel — inset from edges, near full-height
+            var card = Pnl("CardPanel", root.transform, new Color(0.047f, 0.055f, 0.090f, 0.99f));
+            Anchors(card, 0.03f, 0.05f, 0.97f, 0.92f, 0, 0, 0, 0);
+            screen.BackgroundPanel = card.GetComponent<Image>();
+
+            // Thin severity-coloured bar at the very top of the card
+            var topStrip = Pnl("TopStrip", card.transform, C_WARN);
             Anchors(topStrip, 0, 0.975f, 1, 1.0f, 0, 0, 0, 0);
 
-            screen.CountdownText = Txt("Countdown",  root.transform, "", 26, C_WARN, TextAnchor.MiddleCenter);
-            Anchors(screen.CountdownText.gameObject, 0, 0.90f, 1, 0.975f, 20, 0, -20, 0);
+            // All content positioned relative to CardPanel
+            screen.CountdownText = Txt("Countdown", card.transform, "", 26, C_WARN, TextAnchor.MiddleCenter);
+            Anchors(screen.CountdownText.gameObject, 0, 0.91f, 1, 0.975f, 20, 0, -20, 0);
 
-            screen.SeverityText    = Txt("Severity",    root.transform, "CRITICAL",             38, C_WARN,  TextAnchor.UpperCenter);
-            screen.TitleText       = Txt("Title",       root.transform, "Event Title",           48, C_TEXT,  TextAnchor.UpperCenter);
-            screen.ShipNameText    = Txt("ShipName",    root.transform, "ISV Pathfinder",        28, C_DIM,   TextAnchor.UpperCenter);
-            screen.DescriptionText = Txt("Description", root.transform, "Event description.",    28, C_TEXT,  TextAnchor.UpperLeft);
+            screen.SeverityText    = Txt("Severity",    card.transform, "CRITICAL",          36, C_WARN, TextAnchor.UpperCenter);
+            screen.TitleText       = Txt("Title",       card.transform, "Event Title",        46, C_TEXT, TextAnchor.UpperCenter);
+            screen.ShipNameText    = Txt("ShipName",    card.transform, "ISV Pathfinder",     26, C_DIM,  TextAnchor.UpperCenter);
+            screen.DescriptionText = Txt("Description", card.transform, "Event description.", 27, C_TEXT, TextAnchor.UpperLeft);
 
-            Anchors(screen.SeverityText.gameObject,    0, 0.80f, 1, 0.90f, 20, 0, -20, 0);
+            Anchors(screen.SeverityText.gameObject,    0, 0.80f, 1, 0.91f, 20, 0, -20, 0);
             Anchors(screen.TitleText.gameObject,       0, 0.70f, 1, 0.80f, 20, 0, -20, 0);
             Anchors(screen.ShipNameText.gameObject,    0, 0.64f, 1, 0.70f, 20, 0, -20, 0);
             Anchors(screen.DescriptionText.gameObject, 0, 0.50f, 1, 0.64f, 20, 0, -20, 0);
 
-            var statRow = HRow("StatRow", root.transform, 15);
+            var statRow = HRow("StatRow", card.transform, 15);
             Anchors(statRow, 0, 0.44f, 1, 0.50f, 20, 5, -20, -5);
-            screen.HullText   = Txt("Hull",   statRow.transform, "Hull 100%",   24, C_TEXT,  TextAnchor.MiddleCenter);
-            screen.MoraleText = Txt("Morale", statRow.transform, "Morale 100%", 24, C_TEXT,  TextAnchor.MiddleCenter);
-            screen.CargoText  = Txt("Cargo",  statRow.transform, "Cargo 100%",  24, C_TEXT,  TextAnchor.MiddleCenter);
-            screen.FoodText   = Txt("Food",   statRow.transform, "Food 100%",   24, C_TEXT,  TextAnchor.MiddleCenter);
+            screen.HullText   = Txt("Hull",   statRow.transform, "Hull 100%",   22, C_TEXT, TextAnchor.MiddleCenter);
+            screen.MoraleText = Txt("Morale", statRow.transform, "Morale 100%", 22, C_TEXT, TextAnchor.MiddleCenter);
+            screen.CargoText  = Txt("Cargo",  statRow.transform, "Cargo 100%",  22, C_TEXT, TextAnchor.MiddleCenter);
+            screen.FoodText   = Txt("Food",   statRow.transform, "Food 100%",   22, C_TEXT, TextAnchor.MiddleCenter);
 
-            var optPanel = Pnl("OptionsPanel", root.transform, Color.clear);
+            var optPanel = Pnl("OptionsPanel", card.transform, Color.clear);
             Anchors(optPanel, 0, 0.14f, 1, 0.44f, 20, 10, -20, -10);
             var optL = optPanel.AddComponent<VerticalLayoutGroup>();
-            optL.spacing = 15; optL.childControlWidth = true; optL.childControlHeight = true;
+            optL.spacing = 14; optL.childControlWidth = true; optL.childControlHeight = true;
             optL.childForceExpandWidth = true; optL.childForceExpandHeight = false;
             screen.OptionsParent      = optPanel.transform;
             screen.OptionButtonPrefab = optionBtnPrefab;
 
-            // Ignore / dismiss button — secondary action at bottom of card
-            var ignoreBtn = Btn("IgnoreBtn", root.transform, "Continue voyage →  (issue may worsen)", new Color(0f, 0f, 0f, 0f), C_DIM);
+            // Dismiss — secondary action at the bottom of the card
+            var ignoreBtn = Btn("IgnoreBtn", card.transform, "Continue voyage →  (issue may worsen)", Color.clear, C_DIM);
             Anchors(ignoreBtn.gameObject, 0.05f, 0.02f, 0.95f, 0.12f, 0, 0, 0, 0);
-            ignoreBtn.GetComponentInChildren<Text>().Let(t => { t.fontSize = 26; t.alignment = TextAnchor.MiddleCenter; });
+            ignoreBtn.GetComponentInChildren<Text>().Let(t => { t.fontSize = 25; t.alignment = TextAnchor.MiddleCenter; });
             screen.IgnoreButton = ignoreBtn;
 
             EditorUtility.SetDirty(root);

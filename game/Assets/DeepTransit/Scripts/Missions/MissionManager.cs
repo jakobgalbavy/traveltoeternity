@@ -63,18 +63,33 @@ namespace DeepTransit.Missions
             OnMissionArrived?.Invoke(mission, payout);
         }
 
+        // Engine efficiency at Mk.I (starter tier): blueprint base 1.0 + module Mk.I bonus 1.0 = 2.0.
+        // Voyage time scales as baseMinutes × (baseline / efficiency); clamped so no tier gives a penalty.
+        public const float BaselineEngineEfficiency = 2f;
+
+        public static long ApplyEngineEfficiency(long baseMinutes, float engineEfficiency)
+        {
+            float factor = Mathf.Max(BaselineEngineEfficiency, engineEfficiency) / BaselineEngineEfficiency;
+            return Mathf.Max(1L, (long)Mathf.RoundToInt(baseMinutes / factor));
+        }
+
         public Mission LaunchMission(string shipName, string destinationId, CargoManifest cargo, List<string> contractorIds, bool deferCrewPay = false)
         {
             var gm = GameManager.Instance;
             long start = gm?.TimeManager?.ElapsedGameMinutes ?? 0;
             DestinationSO dest = gm?.StarMapManager?.GetById(destinationId);
 
+            long baseMinutes = dest?.VoyageMinutes ?? TimeManager.HoursToGameMinutes(4);
+            var  ship        = gm?.ShipManager?.GetByName(shipName);
+            float efficiency = ship?.GetStat(Ships.ShipStat.EngineEfficiency) ?? BaselineEngineEfficiency;
+            long duration    = ApplyEngineEfficiency(baseMinutes, efficiency);
+
             var mission = new Mission
             {
                 Id = Guid.NewGuid().ToString("N")[..8],
                 ShipName = shipName,
                 DestinationId = destinationId,
-                DurationMinutes = dest?.VoyageMinutes ?? TimeManager.HoursToGameMinutes(4),
+                DurationMinutes = duration,
                 Cargo = cargo,
                 AssignedContractorIds = contractorIds ?? new List<string>(),
                 DeferredCrewPay = deferCrewPay,

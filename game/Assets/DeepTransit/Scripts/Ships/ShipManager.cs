@@ -24,5 +24,12 @@ namespace DeepTransit.Ships
             Ships.Add(ship);
             return ship;
         }
+
+        public ShipInstance GetByName(string shipName)
+        {
+            foreach (var s in Ships)
+                if (s.Name == shipName) return s;
+            return null;
+        }
     }
 }

@@ -110,14 +110,25 @@ namespace DeepTransit.UI
             _selectedDest = dest;
             Debug.Log($"[MissionConfig] Selected: {dest.DisplayName}");
             if (SelectedDestinationText) SelectedDestinationText.text = $"→ {dest.DisplayName}";
-            if (VoyageDurationText)
-            {
-                float hours = dest.VoyageMinutes / 60f;
-                VoyageDurationText.text = hours >= 24
-                    ? $"Duration: {hours / 24f:F1} days"
-                    : $"Duration: {hours:F1}h";
-            }
+            RefreshVoyageDuration();
             OnCargoChanged();
+        }
+
+        void RefreshVoyageDuration()
+        {
+            if (VoyageDurationText == null || _selectedDest == null) return;
+            var gm   = GameManager.Instance;
+            var ship = gm?.ShipManager?.Ships?.Count > 0 ? gm.ShipManager.Ships[0] : null;
+            float efficiency = ship?.GetStat(ShipStat.EngineEfficiency)
+                               ?? Missions.MissionManager.BaselineEngineEfficiency;
+            long  adjMinutes = Missions.MissionManager.ApplyEngineEfficiency(_selectedDest.VoyageMinutes, efficiency);
+            float hours      = adjMinutes / 60f;
+            string timeStr   = hours >= 24 ? $"{hours / 24f:F1} days" : $"{hours:F1}h";
+
+            bool boosted = adjMinutes < _selectedDest.VoyageMinutes;
+            VoyageDurationText.text = boosted
+                ? $"Duration: {timeStr}  ↑ engine boost"
+                : $"Duration: {timeStr}";
         }
 
         void ToggleDeferPay()

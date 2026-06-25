@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using DeepTransit.Ships;
+using DeepTransit.Missions;
 
 namespace DeepTransit.Tests
 {
@@ -99,6 +100,49 @@ namespace DeepTransit.Tests
             ship.InstallModule(0, MakeModule(ModuleType.Hull, ShipStat.HullIntegrity, 50f));
             // Only 1 tier (index 0), already at max
             Assert.IsFalse(ship.StartUpgrade(0, 0));
+        }
+
+        // ── Engine efficiency / voyage time ──────────────────────────────────
+
+        [Test]
+        public void ApplyEngineEfficiency_AtBaseline_NoChange()
+        {
+            // Mk.I installed = efficiency 2.0 (blueprint 1.0 + Mk.I 1.0) = baseline
+            long result = MissionManager.ApplyEngineEfficiency(240, MissionManager.BaselineEngineEfficiency);
+            Assert.AreEqual(240L, result);
+        }
+
+        [Test]
+        public void ApplyEngineEfficiency_BelowBaseline_NoSpeedPenalty()
+        {
+            // Ship with no engine module (efficiency = blueprint base 1.0 only)
+            long result = MissionManager.ApplyEngineEfficiency(240, 1f);
+            Assert.AreEqual(240L, result); // clamped — no penalty
+        }
+
+        [Test]
+        public void ApplyEngineEfficiency_AboveBaseline_ReducesDuration()
+        {
+            // Mk.II total = 2.5 → factor = 2.5/2.0 = 1.25 → 240/1.25 = 192
+            long result = MissionManager.ApplyEngineEfficiency(240, 2.5f);
+            Assert.AreEqual(192L, result);
+        }
+
+        [Test]
+        public void ApplyEngineEfficiency_MaxTier_SignificantReduction()
+        {
+            // Mk.V total = 6.5 → 240 / (6.5/2.0) = 240 / 3.25 ≈ 74
+            long result = MissionManager.ApplyEngineEfficiency(240, 6.5f);
+            Assert.Less(result, 100L);
+            Assert.Greater(result, 0L);
+        }
+
+        [Test]
+        public void ApplyEngineEfficiency_HigherEfficiency_AlwaysFaster()
+        {
+            long tier1 = MissionManager.ApplyEngineEfficiency(1440, 2.5f);
+            long tier4 = MissionManager.ApplyEngineEfficiency(1440, 6.5f);
+            Assert.Less(tier4, tier1);
         }
     }
 }
