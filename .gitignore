@@ -12,6 +12,9 @@ game/Recordings/
 # Unity asset metadata (keep .meta files for tracked assets)
 # Never ignore .meta files for tracked source files
 
+# Claude Code local settings (machine-specific, not for source control)
+.claude/settings.local.json
+
 # OS
 .DS_Store
 Thumbs.db

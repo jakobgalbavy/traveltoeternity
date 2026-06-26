@@ -1,0 +1,104 @@
+name: Deploy to Google Play (Alpha)
+
+# Triggers on semver tags (v1.2.3) or manual dispatch.
+# To ship a build: git tag v0.1.0 && git push origin v0.1.0
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+jobs:
+  # ── Build ────────────────────────────────────────────────────────────────────
+  build:
+    name: Build Android AAB
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Unity Library is large — cache it so repeat builds are fast.
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: game/Library
+          key: Library-Android-${{ hashFiles('game/Assets/**', 'game/Packages/**', 'game/ProjectSettings/**') }}
+          restore-keys: |
+            Library-Android-
+            Library-
+
+      # Derive a human-readable version string from the tag (v1.2.3 → 1.2.3)
+      # or fall back to 0.0.<run_number> for manual dispatches.
+      - name: Resolve version
+        id: ver
+        run: |
+          REF="${GITHUB_REF_NAME}"
+          if [[ "$REF" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "name=${REF#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=0.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build project
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL:   ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: game
+          targetPlatform: Android
+          androidExportType: androidAppBundle
+          # Keystore — base64-encode your .keystore file and store as secret:
+          #   base64 -i deepTransit.keystore | tr -d '\n'
+          androidKeystoreName: deepTransit.keystore
+          androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          androidKeystorePass:   ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          androidKeyaliasName:   ${{ secrets.ANDROID_KEY_ALIAS }}
+          androidKeyaliasPass:   ${{ secrets.ANDROID_KEY_ALIAS_PASS }}
+          versioning: Custom
+          version: ${{ steps.ver.outputs.name }}
+          androidVersionCode: ${{ github.run_number }}
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-Android-${{ github.run_number }}
+          path: build/Android/*.aab
+          retention-days: 14
+
+  # ── Deploy ───────────────────────────────────────────────────────────────────
+  deploy:
+    name: Upload to Google Play Alpha
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download AAB
+        uses: actions/download-artifact@v4
+        with:
+          name: Build-Android-${{ github.run_number }}
+          path: aab
+
+      - name: Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          # Must match the Package Name set in Unity → Player Settings → Android.
+          # Set this in Google Play Console when creating the app, then mirror it here.
+          packageName: com.deepTransitAuthority.deepTransit
+          releaseFiles: aab/*.aab
+          track: alpha
+          status: draft   # stays as draft until you promote it in Play Console
+
+# ── Required GitHub Secrets ──────────────────────────────────────────────────
+# UNITY_LICENSE            — contents of your .ulf license file
+# UNITY_EMAIL              — Unity account email
+# UNITY_PASSWORD           — Unity account password
+# ANDROID_KEYSTORE_BASE64  — base64-encoded .keystore file
+# ANDROID_KEYSTORE_PASS    — keystore password
+# ANDROID_KEY_ALIAS        — key alias name inside the keystore
+# ANDROID_KEY_ALIAS_PASS   — key alias password
+# GOOGLE_PLAY_SERVICE_ACCOUNT_JSON — JSON key for a service account with
+#   "Release Manager" role in Google Play Console → Setup → API access
