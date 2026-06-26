@@ -87,7 +87,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           # Must match the Package Name set in Unity → Player Settings → Android.
           # Set this in Google Play Console when creating the app, then mirror it here.
-          packageName: com.deepTransitAuthority.deepTransit
+          packageName: net.bytesoup.deeptransit
           releaseFiles: aab/*.aab
           track: alpha
           status: draft   # stays as draft until you promote it in Play Console

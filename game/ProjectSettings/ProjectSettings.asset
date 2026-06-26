@@ -163,7 +163,10 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
-  applicationIdentifier: {}
+  applicationIdentifier:
+    Android: net.bytesoup.deeptransit
+    iPhone: net.bytesoup.deeptransit
+    Standalone: net.bytesoup.deeptransit
   buildNumber:
     Standalone: 0
     VisionOS: 0
